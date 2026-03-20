@@ -1,5 +1,5 @@
 services:
-  web:
+  app-build:
     build:
       context: .
       dockerfile: dockerfile_build/Dockerfile
