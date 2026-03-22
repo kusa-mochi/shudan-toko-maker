@@ -1,1 +1,2 @@
-docker compose -f docker-compose.init.yml run --rm init
+@echo off
+docker compose -f docker-compose.init.yml up
