@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: dockerfile_build/Dockerfile
-      args:
-        NODE_ENV: development
     image: shudan-toko-maker-dev
     ports:
       - "3000:3000"
