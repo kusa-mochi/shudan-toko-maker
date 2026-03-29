@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -21,8 +22,10 @@ import {
   getAllChildRecords,
 } from "./plannerUtils";
 import type {
+  FlagDutyPlan,
   FlagDutySettings,
   Grade,
+  GroupPlan,
   GroupRule,
   Household,
   PairRule,
@@ -43,9 +46,10 @@ type PlannerContextValue = {
   lastSavedAt: string;
   childOptions: ChildOption[];
   childCount: number;
-  groupPlan: ReturnType<typeof generateSchoolGroups>;
-  flagDutyPlan: ReturnType<typeof generateFlagDutySchedule>;
-  saveDraft: () => void;
+  groupPlan: GroupPlan;
+  flagDutyPlan: FlagDutyPlan;
+  isPlanStale: boolean;
+  generatePlans: () => void;
   addHousehold: () => void;
   removeHousehold: (householdId: string) => void;
   updateHouseholdText: (
@@ -93,6 +97,22 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     demoState.flagDutySettings,
   );
   const [lastSavedAt, setLastSavedAt] = useState("");
+  const [groupPlan, setGroupPlan] = useState<GroupPlan>(() =>
+    generateSchoolGroups(demoState.households, demoState.pairRules, demoState.groupRules),
+  );
+  const [flagDutyPlan, setFlagDutyPlan] = useState<FlagDutyPlan>(() =>
+    generateFlagDutySchedule(demoState.households, demoState.schoolEvents, demoState.flagDutySettings),
+  );
+  const [isPlanStale, setIsPlanStale] = useState(false);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setIsPlanStale(true);
+  }, [households, pairRules, groupRules, schoolEvents, flagDutySettings]);
 
   const childRecords = getAllChildRecords(households);
   const childOptions = childRecords
@@ -318,7 +338,10 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const saveDraft = () => {
+  const generatePlans = () => {
+    setGroupPlan(generateSchoolGroups(households, pairRules, groupRules));
+    setFlagDutyPlan(generateFlagDutySchedule(households, schoolEvents, flagDutySettings));
+    setIsPlanStale(false);
     setLastSavedAt(
       new Intl.DateTimeFormat("ja-JP", {
         month: "numeric",
@@ -338,9 +361,10 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     lastSavedAt,
     childOptions,
     childCount: childRecords.length,
-    groupPlan: generateSchoolGroups(households, pairRules, groupRules),
-    flagDutyPlan: generateFlagDutySchedule(households, schoolEvents, flagDutySettings),
-    saveDraft,
+    groupPlan,
+    flagDutyPlan,
+    isPlanStale,
+    generatePlans,
     addHousehold,
     removeHousehold,
     updateHouseholdText,

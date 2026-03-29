@@ -7,9 +7,11 @@ export function PlannerHero() {
     households,
     childCount,
     pairRules,
+    groupRules,
     schoolEvents,
     lastSavedAt,
-    saveDraft,
+    isPlanStale,
+    generatePlans,
   } = usePlannerContext();
 
   return (
@@ -45,11 +47,29 @@ export function PlannerHero() {
               <p className="text-2xl font-semibold text-stone-900">{schoolEvents.length}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
-              <p className="text-stone-500">入力状態</p>
-              <p className="text-lg font-semibold text-stone-900">
-                {lastSavedAt ? `${lastSavedAt} に更新` : "編集中"}
-              </p>
+              <p className="text-stone-500">班編成ルール</p>
+              <p className="text-2xl font-semibold text-stone-900">{groupRules.length}</p>
             </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              type="button"
+              onClick={generatePlans}
+              className={`rounded-full px-6 py-3 text-sm font-semibold transition ${
+                isPlanStale
+                  ? "bg-amber-400 text-stone-900 hover:bg-amber-300"
+                  : "bg-stone-900 text-white hover:bg-stone-700"
+              }`}
+            >
+              班編成・当番表をつくる
+            </button>
+            {isPlanStale && (
+              <p className="text-sm font-medium text-amber-700">入力内容に変更があります</p>
+            )}
+            {lastSavedAt && !isPlanStale && (
+              <p className="text-sm text-stone-500">{lastSavedAt} に生成</p>
+            )}
           </div>
         </div>
 
