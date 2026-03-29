@@ -6,6 +6,8 @@ export function PairRulesPanel() {
   const {
     pairRules,
     childOptions,
+    prioritizedRules,
+    moveRulePriority,
     addPairRule,
     updatePairRule,
     removePairRule,
@@ -24,8 +26,74 @@ export function PairRulesPanel() {
         登校班の編成条件と、児童ごとの組み合わせ事情を設定できます。
       </p>
 
-      {/* 班の編成ルール */}
       <div className="mt-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold text-stone-900">ルール優先順位（全体）</h3>
+          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+            上ほど優先
+          </span>
+        </div>
+
+        {prioritizedRules.length === 0 ? (
+          <p className="mt-2 rounded-3xl bg-stone-50 px-4 py-3 text-sm text-stone-600">
+            まだ優先順位を付けるルールがありません。
+          </p>
+        ) : (
+          <div className="mt-2 space-y-2">
+            {prioritizedRules.map((rule, index) => {
+              const isFirst = index === 0;
+              const isLast = index === prioritizedRules.length - 1;
+
+              return (
+                <div
+                  key={rule.key}
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-white px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-2 text-sm font-semibold text-stone-900">
+                      <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-900 text-xs text-white">
+                        {index + 1}
+                      </span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          rule.kind === "group"
+                            ? "bg-sky-100 text-sky-900"
+                            : "bg-emerald-100 text-emerald-900"
+                        }`}
+                      >
+                        {rule.title}
+                      </span>
+                    </p>
+                    <p className="mt-1 truncate text-sm text-stone-600">{rule.detail}</p>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => moveRulePriority(rule.key, "up")}
+                      disabled={isFirst}
+                      className="rounded-xl border border-stone-300 px-2 py-1 text-xs font-semibold text-stone-700 transition hover:border-stone-900 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveRulePriority(rule.key, "down")}
+                      disabled={isLast}
+                      className="rounded-xl border border-stone-300 px-2 py-1 text-xs font-semibold text-stone-700 transition hover:border-stone-900 hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 班の編成ルール */}
+      <div className="mt-5">
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-lg font-semibold text-stone-900">班の編成ルール</h3>
           <button

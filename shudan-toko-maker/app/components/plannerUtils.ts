@@ -129,6 +129,7 @@ function buildRuleMaps(children: ChildRecord[], rules: PairRule[]) {
   const childrenById = new Map(children.map((child) => [child.id, child]));
   const togetherMap = new Map<string, Set<string>>();
   const separateMap = new Map<string, Set<string>>();
+  const appliedPairRuleTypeByKey = new Map<string, { type: PairRule["type"]; index: number }>();
   const warnings: string[] = [];
 
   rules.forEach((rule, index) => {
@@ -143,6 +144,20 @@ function buildRuleMaps(children: ChildRecord[], rules: PairRule[]) {
     if (childA.id === childB.id) {
       warnings.push(`個別事情 ${index + 1} は同じ児童が2回選ばれているため、班編成では未反映です。`);
       return;
+    }
+
+    const pairKey = [childA.id, childB.id].sort().join("|");
+    const existing = appliedPairRuleTypeByKey.get(pairKey);
+
+    if (existing && existing.type !== rule.type) {
+      warnings.push(
+        `個別事情 ${index + 1} は個別事情 ${existing.index + 1} と競合するため、優先順位により未反映です。`,
+      );
+      return;
+    }
+
+    if (!existing) {
+      appliedPairRuleTypeByKey.set(pairKey, { type: rule.type, index });
     }
 
     if (rule.type === "together") {
@@ -308,8 +323,20 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[],
   let maxPerGroup = 5;
   let assignLeaders = true;
   let assignRears = true;
+  const appliedGroupRuleByType = new Map<GroupRule["type"], number>();
 
-  for (const rule of groupRules) {
+  groupRules.forEach((rule, index) => {
+    const existingIndex = appliedGroupRuleByType.get(rule.type);
+
+    if (existingIndex !== undefined) {
+      warnings.push(
+        `班の編成ルール ${index + 1} は同種ルール ${existingIndex + 1} より優先順位が低いため、未反映です。`,
+      );
+      return;
+    }
+
+    appliedGroupRuleByType.set(rule.type, index);
+
     if (rule.type === "groupSize") {
       minPerGroup = rule.minSize;
       maxPerGroup = rule.maxSize;
@@ -318,7 +345,7 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[],
     } else if (rule.type === "rearPosition") {
       assignRears = rule.strategy !== "none";
     }
-  }
+  });
 
   const calculatedGroupCount = calculateGroupCount(children.length, minPerGroup, maxPerGroup);
   const groupCount = calculatedGroupCount ?? 1;

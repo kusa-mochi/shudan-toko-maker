@@ -38,6 +38,51 @@ type ChildOption = {
 };
 
 export type ActiveTab = "input" | "results";
+export type RuleKind = "group" | "pair";
+
+type RulePriorityItem = {
+  key: string;
+  kind: RuleKind;
+  title: string;
+  detail: string;
+};
+
+function toRuleKey(kind: RuleKind, id: string): string {
+  return `${kind}:${id}`;
+}
+
+function parseRuleKey(ruleKey: string): { kind: RuleKind; id: string } | null {
+  const [kind, id] = ruleKey.split(":");
+
+  if ((kind !== "group" && kind !== "pair") || !id) {
+    return null;
+  }
+
+  return { kind, id };
+}
+
+function describeGroupRule(rule: GroupRule): string {
+  if (rule.type === "groupSize") {
+    return `班の人数を ${rule.minSize}〜${rule.maxSize} 人に設定`;
+  }
+
+  if (rule.type === "leaderPosition") {
+    return rule.strategy === "none"
+      ? "先頭の自動配置をしない"
+      : "先頭を最年長順で配置";
+  }
+
+  return rule.strategy === "none"
+    ? "最後尾の自動配置をしない"
+    : "最後尾を最年長順で配置";
+}
+
+function describePairRule(rule: PairRule, childOptionMap: Map<string, string>): string {
+  const relation = rule.type === "together" ? "同じ班" : "別々の班";
+  const childA = childOptionMap.get(rule.childAId) ?? "児童A未選択";
+  const childB = childOptionMap.get(rule.childBId) ?? "児童B未選択";
+  return `${relation}: ${childA} / ${childB}`;
+}
 
 type PlannerContextValue = {
   households: Household[];
@@ -52,7 +97,9 @@ type PlannerContextValue = {
   flagDutyPlan: FlagDutyPlan;
   isPlanStale: boolean;
   activeTab: ActiveTab;
+  prioritizedRules: RulePriorityItem[];
   switchTab: (tab: ActiveTab) => void;
+  moveRulePriority: (ruleKey: string, direction: "up" | "down") => void;
   generatePlans: () => void;
   addHousehold: () => void;
   removeHousehold: (householdId: string) => void;
@@ -96,6 +143,10 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   const [households, setHouseholds] = useState<Household[]>(demoState.households);
   const [pairRules, setPairRules] = useState<PairRule[]>(demoState.pairRules);
   const [groupRules, setGroupRules] = useState<GroupRule[]>(demoState.groupRules);
+  const [rulePriorityOrder, setRulePriorityOrder] = useState<string[]>([
+    ...demoState.groupRules.map((rule) => toRuleKey("group", rule.id)),
+    ...demoState.pairRules.map((rule) => toRuleKey("pair", rule.id)),
+  ]);
   const [schoolEvents, setSchoolEvents] = useState<SchoolEvent[]>(demoState.schoolEvents);
   const [flagDutySettings, setFlagDutySettings] = useState<FlagDutySettings>(
     demoState.flagDutySettings,
@@ -112,12 +163,38 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   const isFirstRender = useRef(true);
 
   useEffect(() => {
+    setRulePriorityOrder((current) => {
+      const validKeys = [
+        ...groupRules.map((rule) => toRuleKey("group", rule.id)),
+        ...pairRules.map((rule) => toRuleKey("pair", rule.id)),
+      ];
+      const validKeySet = new Set(validKeys);
+      const filteredCurrent = current.filter((ruleKey, index) => {
+        if (!validKeySet.has(ruleKey)) {
+          return false;
+        }
+
+        return current.indexOf(ruleKey) === index;
+      });
+
+      const missingKeys = validKeys.filter((ruleKey) => !filteredCurrent.includes(ruleKey));
+      const next = [...filteredCurrent, ...missingKeys];
+
+      if (next.length === current.length && next.every((ruleKey, index) => ruleKey === current[index])) {
+        return current;
+      }
+
+      return next;
+    });
+  }, [groupRules, pairRules]);
+
+  useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
     setIsPlanStale(true);
-  }, [households, pairRules, groupRules, schoolEvents, flagDutySettings]);
+  }, [households, pairRules, groupRules, rulePriorityOrder, schoolEvents, flagDutySettings]);
 
   const childRecords = getAllChildRecords(households);
   const childOptions = childRecords
@@ -127,6 +204,85 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
       id: child.id,
       label: `${child.householdName || "未入力のご家庭"} / ${displayChildName(child)}`,
     }));
+
+  const childOptionMap = new Map(childOptions.map((child) => [child.id, child.label]));
+  const pairRuleMap = new Map(pairRules.map((rule) => [rule.id, rule]));
+  const groupRuleMap = new Map(groupRules.map((rule) => [rule.id, rule]));
+
+  const prioritizedRules: RulePriorityItem[] = [];
+  const orderedPairRules: PairRule[] = [];
+  const orderedGroupRules: GroupRule[] = [];
+  const seenPairRuleIds = new Set<string>();
+  const seenGroupRuleIds = new Set<string>();
+
+  rulePriorityOrder.forEach((ruleKey) => {
+    const parsed = parseRuleKey(ruleKey);
+
+    if (!parsed) {
+      return;
+    }
+
+    if (parsed.kind === "pair") {
+      const rule = pairRuleMap.get(parsed.id);
+
+      if (!rule || seenPairRuleIds.has(rule.id)) {
+        return;
+      }
+
+      seenPairRuleIds.add(rule.id);
+      orderedPairRules.push(rule);
+      prioritizedRules.push({
+        key: toRuleKey("pair", rule.id),
+        kind: "pair",
+        title: "児童の組み合わせ",
+        detail: describePairRule(rule, childOptionMap),
+      });
+      return;
+    }
+
+    const rule = groupRuleMap.get(parsed.id);
+
+    if (!rule || seenGroupRuleIds.has(rule.id)) {
+      return;
+    }
+
+    seenGroupRuleIds.add(rule.id);
+    orderedGroupRules.push(rule);
+    prioritizedRules.push({
+      key: toRuleKey("group", rule.id),
+      kind: "group",
+      title: "班の編成ルール",
+      detail: describeGroupRule(rule),
+    });
+  });
+
+  groupRules.forEach((rule) => {
+    if (seenGroupRuleIds.has(rule.id)) {
+      return;
+    }
+
+    orderedGroupRules.push(rule);
+    prioritizedRules.push({
+      key: toRuleKey("group", rule.id),
+      kind: "group",
+      title: "班の編成ルール",
+      detail: describeGroupRule(rule),
+    });
+  });
+
+  pairRules.forEach((rule) => {
+    if (seenPairRuleIds.has(rule.id)) {
+      return;
+    }
+
+    orderedPairRules.push(rule);
+    prioritizedRules.push({
+      key: toRuleKey("pair", rule.id),
+      kind: "pair",
+      title: "児童の組み合わせ",
+      detail: describePairRule(rule, childOptionMap),
+    });
+  });
 
   const removeRulesForChildIds = (childIds: string[]) => {
     const childIdSet = new Set(childIds);
@@ -257,6 +413,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     const ruleId = `pair-rule-${pairRuleIdRef.current}`;
     pairRuleIdRef.current += 1;
     setPairRules((current) => [...current, createPairRule(ruleId, childRecords)]);
+    setRulePriorityOrder((current) => [...current, toRuleKey("pair", ruleId)]);
   };
 
   const updatePairRule = (ruleId: string, field: keyof PairRule, value: string) => {
@@ -267,12 +424,14 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
 
   const removePairRule = (ruleId: string) => {
     setPairRules((current) => current.filter((rule) => rule.id !== ruleId));
+    setRulePriorityOrder((current) => current.filter((ruleKey) => ruleKey !== toRuleKey("pair", ruleId)));
   };
 
   const addGroupRule = () => {
     const ruleId = `group-rule-${groupRuleIdRef.current}`;
     groupRuleIdRef.current += 1;
     setGroupRules((current) => [...current, createGroupRule(ruleId)]);
+    setRulePriorityOrder((current) => [...current, toRuleKey("group", ruleId)]);
   };
 
   const updateGroupRule = (ruleId: string, field: keyof GroupRule, value: string) => {
@@ -293,6 +452,33 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
 
   const removeGroupRule = (ruleId: string) => {
     setGroupRules((current) => current.filter((rule) => rule.id !== ruleId));
+    setRulePriorityOrder((current) => current.filter((ruleKey) => ruleKey !== toRuleKey("group", ruleId)));
+  };
+
+  const moveRulePriority = (ruleKey: string, direction: "up" | "down") => {
+    setRulePriorityOrder((current) => {
+      const currentIndex = current.indexOf(ruleKey);
+
+      if (currentIndex < 0) {
+        return current;
+      }
+
+      const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+      if (targetIndex < 0 || targetIndex >= current.length) {
+        return current;
+      }
+
+      const next = [...current];
+      const [picked] = next.splice(currentIndex, 1);
+
+      if (!picked) {
+        return current;
+      }
+
+      next.splice(targetIndex, 0, picked);
+      return next;
+    });
   };
 
   const addSchoolEvent = () => {
@@ -348,7 +534,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   };
 
   const generatePlans = () => {
-    setGroupPlan(generateSchoolGroups(households, pairRules, groupRules));
+    setGroupPlan(generateSchoolGroups(households, orderedPairRules, orderedGroupRules));
     setFlagDutyPlan(generateFlagDutySchedule(households, schoolEvents, flagDutySettings));
     setIsPlanStale(false);
     setActiveTab("results");
@@ -375,7 +561,9 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     flagDutyPlan,
     isPlanStale,
     activeTab,
+    prioritizedRules,
     switchTab,
+    moveRulePriority,
     generatePlans,
     addHousehold,
     removeHousehold,
