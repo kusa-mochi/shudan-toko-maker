@@ -1,0 +1,17 @@
+services:
+  app-build:
+    build:
+      context: .
+      dockerfile: dockerfile_build/Dockerfile
+    image: shudan-toko-maker-dev
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./shudan-toko-maker:/app:cached
+      - node_modules:/app/node_modules
+    working_dir: /app
+    user: "1000:1000"
+    command: npm run build
+
+volumes:
+  node_modules:

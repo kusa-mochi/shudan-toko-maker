@@ -1,0 +1,27 @@
+services:
+  init:
+    build:
+      context: .
+      dockerfile: dockerfile_build/Dockerfile
+    image: shudan-toko-maker-init
+    container_name: shudan-toko-maker-init
+    volumes:
+      - ./shudan-toko-maker:/app:rw
+      - node_modules:/app/node_modules
+    working_dir: /app
+    command: ["sh", "-c", "npm ci; chown -R 1000:1000 /app"]
+    environment:
+      - NODE_ENV=development
+  copy-modules-to-host:
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    image: busybox
+    container_name: shudan-toko-copy-modules-to-host
+    volumes:
+      - node_modules:/copy
+      - ./shudan-toko-maker/node_modules:/dest
+    command: ["sh", "-c", "cp -a /copy/. /dest/"]
+
+volumes:
+  node_modules:
