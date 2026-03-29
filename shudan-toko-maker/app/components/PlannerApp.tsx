@@ -5,7 +5,6 @@ import { FlagDutyPlanPanel } from "./FlagDutyPlanPanel";
 import { FlagDutySettingsPanel } from "./FlagDutySettingsPanel";
 import { GroupPlanPanel } from "./GroupPlanPanel";
 import { HouseholdFormSection } from "./HouseholdFormSection";
-import { HouseholdPreviewPanel } from "./HouseholdPreviewPanel";
 import { PairRulesPanel } from "./PairRulesPanel";
 import { PlannerHero } from "./PlannerHero";
 import { SchoolEventsPanel } from "./SchoolEventsPanel";
@@ -21,7 +20,6 @@ export function PlannerApp() {
             <HouseholdFormSection />
 
             <div className="space-y-4 xl:sticky xl:top-6 xl:self-start">
-              <HouseholdPreviewPanel />
               <PairRulesPanel />
               <SchoolEventsPanel />
               <FlagDutySettingsPanel />
