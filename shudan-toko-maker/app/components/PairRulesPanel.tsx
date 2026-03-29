@@ -134,7 +134,7 @@ export function PairRulesPanel() {
           </button>
         </div>
         <p className="mt-2 text-sm leading-6 text-stone-600">
-          そりの合わない子は別班、兄弟や仲の良い子は同班、などを2人単位で登録できます。
+          別班にしたい児童の組合せ、同班にしたい児童の組合せ、などを登録できます。
         </p>
 
         <div className="mt-3 space-y-3">
