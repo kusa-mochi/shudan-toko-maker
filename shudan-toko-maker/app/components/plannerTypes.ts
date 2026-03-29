@@ -23,6 +23,18 @@ export type PairRule = {
   note: string;
 };
 
+export type GroupRuleType = "groupSize" | "leaderPosition" | "rearPosition";
+export type PositionStrategy = "most-senior" | "none";
+
+export type GroupRule = {
+  id: string;
+  type: GroupRuleType;
+  minSize: number;
+  maxSize: number;
+  strategy: PositionStrategy;
+  note: string;
+};
+
 export type SchoolEvent = {
   id: string;
   title: string;

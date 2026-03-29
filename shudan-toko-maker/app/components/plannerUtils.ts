@@ -6,6 +6,7 @@ import type {
   GeneratedGroup,
   Grade,
   GroupPlan,
+  GroupRule,
   Household,
   PairRule,
   SchoolEvent,
@@ -57,6 +58,17 @@ export function createSchoolEvent(id: string): SchoolEvent {
     title: "",
     date: "",
     targetGrades: [6],
+  };
+}
+
+export function createGroupRule(id: string): GroupRule {
+  return {
+    id,
+    type: "groupSize",
+    minSize: 4,
+    maxSize: 5,
+    strategy: "most-senior",
+    note: "",
   };
 }
 
@@ -196,13 +208,13 @@ function buildTogetherComponents(
   return components;
 }
 
-function calculateGroupCount(childCount: number): number | null {
+function calculateGroupCount(childCount: number, minPerGroup: number, maxPerGroup: number): number | null {
   if (childCount === 0) {
     return null;
   }
 
-  const minimumGroups = Math.ceil(childCount / 5);
-  const maximumGroups = Math.floor(childCount / 4);
+  const minimumGroups = Math.ceil(childCount / maxPerGroup);
+  const maximumGroups = Math.floor(childCount / minPerGroup);
 
   if (minimumGroups <= maximumGroups) {
     return minimumGroups;
@@ -211,8 +223,8 @@ function calculateGroupCount(childCount: number): number | null {
   return null;
 }
 
-function createTargetSizes(childCount: number, groupCount: number): number[] {
-  if (groupCount === 1 && childCount < 4) {
+function createTargetSizes(childCount: number, groupCount: number, minPerGroup: number): number[] {
+  if (groupCount === 1 && childCount < minPerGroup) {
     return [childCount];
   }
 
@@ -226,6 +238,7 @@ function chooseBestGroup(
   groups: InternalGroup[],
   component: GroupComponent,
   separateMap: Map<string, Set<string>>,
+  maxPerGroup: number,
 ) {
   return [...groups]
     .map((group) => {
@@ -242,7 +255,7 @@ function chooseBestGroup(
       }, 0);
 
       const finalSize = currentMembers.length + component.members.length;
-      const overflowBeyondFive = Math.max(0, finalSize - 5);
+      const overflowBeyondMax = Math.max(0, finalSize - maxPerGroup);
       const overflowBeyondTarget = Math.max(0, finalSize - group.targetSize);
       const shortage = group.targetSize - currentMembers.length;
 
@@ -250,7 +263,7 @@ function chooseBestGroup(
         group,
         conflictCount,
         finalSize,
-        overflowBeyondFive,
+        overflowBeyondMax,
         overflowBeyondTarget,
         shortage,
       };
@@ -260,8 +273,8 @@ function chooseBestGroup(
         return a.conflictCount - b.conflictCount;
       }
 
-      if (a.overflowBeyondFive !== b.overflowBeyondFive) {
-        return a.overflowBeyondFive - b.overflowBeyondFive;
+      if (a.overflowBeyondMax !== b.overflowBeyondMax) {
+        return a.overflowBeyondMax - b.overflowBeyondMax;
       }
 
       if (a.overflowBeyondTarget !== b.overflowBeyondTarget) {
@@ -280,7 +293,7 @@ function chooseBestGroup(
     })[0];
 }
 
-export function generateSchoolGroups(households: Household[], rules: PairRule[]): GroupPlan {
+export function generateSchoolGroups(households: Household[], rules: PairRule[], groupRules: GroupRule[] = []): GroupPlan {
   const warnings: string[] = [];
   const children = getAllChildRecords(households).sort(compareChildrenBySeniority);
 
@@ -291,16 +304,32 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[])
     };
   }
 
-  const calculatedGroupCount = calculateGroupCount(children.length);
+  let minPerGroup = 4;
+  let maxPerGroup = 5;
+  let assignLeaders = true;
+  let assignRears = true;
+
+  for (const rule of groupRules) {
+    if (rule.type === "groupSize") {
+      minPerGroup = rule.minSize;
+      maxPerGroup = rule.maxSize;
+    } else if (rule.type === "leaderPosition") {
+      assignLeaders = rule.strategy !== "none";
+    } else if (rule.type === "rearPosition") {
+      assignRears = rule.strategy !== "none";
+    }
+  }
+
+  const calculatedGroupCount = calculateGroupCount(children.length, minPerGroup, maxPerGroup);
   const groupCount = calculatedGroupCount ?? 1;
 
   if (!calculatedGroupCount) {
     warnings.push(
-      `児童数が ${children.length} 人のため、全班を4〜5人にそろえることはできません。暫定的な人数で班分けしています。`,
+      `児童数が ${children.length} 人のため、全班を${minPerGroup}〜${maxPerGroup}人にそろえることはできません。暫定的な人数で班分けしています。`,
     );
   }
 
-  const targetSizes = createTargetSizes(children.length, groupCount);
+  const targetSizes = createTargetSizes(children.length, groupCount, minPerGroup);
   const groups: InternalGroup[] = Array.from({ length: groupCount }, (_, index) => ({
     index,
     targetSize: targetSizes[index],
@@ -308,21 +337,30 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[])
   }));
 
   const anchorGroupByChildId = new Map<string, number>();
+  let anchorOffset = 0;
 
-  groups.forEach((group, index) => {
-    const leader = children[index];
-    const rear = children[groupCount + index];
+  if (assignLeaders) {
+    groups.forEach((group, index) => {
+      const leader = children[index];
 
-    if (leader) {
-      group.leader = leader;
-      anchorGroupByChildId.set(leader.id, group.index);
-    }
+      if (leader) {
+        group.leader = leader;
+        anchorGroupByChildId.set(leader.id, group.index);
+      }
+    });
+    anchorOffset = groupCount;
+  }
 
-    if (rear) {
-      group.rear = rear;
-      anchorGroupByChildId.set(rear.id, group.index);
-    }
-  });
+  if (assignRears) {
+    groups.forEach((group, index) => {
+      const rear = children[anchorOffset + index];
+
+      if (rear) {
+        group.rear = rear;
+        anchorGroupByChildId.set(rear.id, group.index);
+      }
+    });
+  }
 
   const { togetherMap, separateMap, warnings: ruleWarnings } = buildRuleMaps(children, rules);
   warnings.push(...ruleWarnings);
@@ -384,7 +422,7 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[])
   pendingComponents
     .sort((a, b) => compareChildrenBySeniority(a.members[0], b.members[0]))
     .forEach((component) => {
-      const candidate = chooseBestGroup(groups, component, separateMap);
+      const candidate = chooseBestGroup(groups, component, separateMap, maxPerGroup);
 
       if (candidate.conflictCount > 0) {
         warnings.push(
@@ -392,9 +430,9 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[])
         );
       }
 
-      if (candidate.overflowBeyondFive > 0) {
+      if (candidate.overflowBeyondMax > 0) {
         warnings.push(
-          `第${candidate.group.index + 1}班は条件を優先したため ${candidate.finalSize} 人になり、5人を超えています。`,
+          `第${candidate.group.index + 1}班は条件を優先したため ${candidate.finalSize} 人になり、${maxPerGroup}人を超えています。`,
         );
       }
 
@@ -411,8 +449,8 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[])
       ...(group.rear ? [group.rear] : []),
     ];
 
-    if (members.length < 4 || members.length > 5) {
-      warnings.push(`第${group.index + 1}班は ${members.length} 人です。4〜5人の範囲を外れています。`);
+    if (members.length < minPerGroup || members.length > maxPerGroup) {
+      warnings.push(`第${group.index + 1}班は ${members.length} 人です。${minPerGroup}〜${maxPerGroup}人の範囲を外れています。`);
     }
 
     return {

@@ -1,5 +1,6 @@
 import type {
   FlagDutySettings,
+  GroupRule,
   Household,
   PairRule,
   SchoolEvent,
@@ -8,12 +9,14 @@ import type {
 export type DemoPlannerState = {
   households: Household[];
   pairRules: PairRule[];
+  groupRules: GroupRule[];
   schoolEvents: SchoolEvent[];
   flagDutySettings: FlagDutySettings;
   nextIds: {
     household: number;
     child: number;
     pairRule: number;
+    groupRule: number;
     schoolEvent: number;
   };
 };
@@ -148,6 +151,32 @@ export function createDemoPlannerState(): DemoPlannerState {
         note: "兄弟は同じ班希望",
       },
     ],
+    groupRules: [
+      {
+        id: "group-rule-1",
+        type: "groupSize",
+        minSize: 4,
+        maxSize: 5,
+        strategy: "most-senior",
+        note: "1班あたり4〜5人",
+      },
+      {
+        id: "group-rule-2",
+        type: "leaderPosition",
+        minSize: 4,
+        maxSize: 5,
+        strategy: "most-senior",
+        note: "最年長の児童を先頭に配置",
+      },
+      {
+        id: "group-rule-3",
+        type: "rearPosition",
+        minSize: 4,
+        maxSize: 5,
+        strategy: "most-senior",
+        note: "次に年長の児童を最後尾に配置",
+      },
+    ],
     schoolEvents: [
       {
         id: "school-event-1",
@@ -176,6 +205,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       household: 12,
       child: 21,
       pairRule: 4,
+      groupRule: 4,
       schoolEvent: 4,
     },
   };

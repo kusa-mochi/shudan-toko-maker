@@ -11,6 +11,7 @@ import { createDemoPlannerState } from "./plannerDemoData";
 import {
   compareChildrenBySeniority,
   createChild,
+  createGroupRule,
   createHousehold,
   createPairRule,
   createSchoolEvent,
@@ -22,6 +23,7 @@ import {
 import type {
   FlagDutySettings,
   Grade,
+  GroupRule,
   Household,
   PairRule,
   SchoolEvent,
@@ -35,6 +37,7 @@ type ChildOption = {
 type PlannerContextValue = {
   households: Household[];
   pairRules: PairRule[];
+  groupRules: GroupRule[];
   schoolEvents: SchoolEvent[];
   flagDutySettings: FlagDutySettings;
   lastSavedAt: string;
@@ -58,6 +61,9 @@ type PlannerContextValue = {
   addPairRule: () => void;
   updatePairRule: (ruleId: string, field: keyof PairRule, value: string) => void;
   removePairRule: (ruleId: string) => void;
+  addGroupRule: () => void;
+  updateGroupRule: (ruleId: string, field: keyof GroupRule, value: string) => void;
+  removeGroupRule: (ruleId: string) => void;
   addSchoolEvent: () => void;
   updateSchoolEventText: (
     eventId: string,
@@ -76,10 +82,12 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   const householdIdRef = useRef(demoState.nextIds.household);
   const childIdRef = useRef(demoState.nextIds.child);
   const pairRuleIdRef = useRef(demoState.nextIds.pairRule);
+  const groupRuleIdRef = useRef(demoState.nextIds.groupRule);
   const schoolEventIdRef = useRef(demoState.nextIds.schoolEvent);
 
   const [households, setHouseholds] = useState<Household[]>(demoState.households);
   const [pairRules, setPairRules] = useState<PairRule[]>(demoState.pairRules);
+  const [groupRules, setGroupRules] = useState<GroupRule[]>(demoState.groupRules);
   const [schoolEvents, setSchoolEvents] = useState<SchoolEvent[]>(demoState.schoolEvents);
   const [flagDutySettings, setFlagDutySettings] = useState<FlagDutySettings>(
     demoState.flagDutySettings,
@@ -236,6 +244,32 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     setPairRules((current) => current.filter((rule) => rule.id !== ruleId));
   };
 
+  const addGroupRule = () => {
+    const ruleId = `group-rule-${groupRuleIdRef.current}`;
+    groupRuleIdRef.current += 1;
+    setGroupRules((current) => [...current, createGroupRule(ruleId)]);
+  };
+
+  const updateGroupRule = (ruleId: string, field: keyof GroupRule, value: string) => {
+    setGroupRules((current) =>
+      current.map((rule) => {
+        if (rule.id !== ruleId) {
+          return rule;
+        }
+
+        if (field === "minSize" || field === "maxSize") {
+          return { ...rule, [field]: Math.max(1, Number.parseInt(value || "1", 10) || 1) };
+        }
+
+        return { ...rule, [field]: value };
+      }),
+    );
+  };
+
+  const removeGroupRule = (ruleId: string) => {
+    setGroupRules((current) => current.filter((rule) => rule.id !== ruleId));
+  };
+
   const addSchoolEvent = () => {
     const eventId = `school-event-${schoolEventIdRef.current}`;
     schoolEventIdRef.current += 1;
@@ -298,12 +332,13 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   const value: PlannerContextValue = {
     households,
     pairRules,
+    groupRules,
     schoolEvents,
     flagDutySettings,
     lastSavedAt,
     childOptions,
     childCount: childRecords.length,
-    groupPlan: generateSchoolGroups(households, pairRules),
+    groupPlan: generateSchoolGroups(households, pairRules, groupRules),
     flagDutyPlan: generateFlagDutySchedule(households, schoolEvents, flagDutySettings),
     saveDraft,
     addHousehold,
@@ -317,6 +352,9 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     addPairRule,
     updatePairRule,
     removePairRule,
+    addGroupRule,
+    updateGroupRule,
+    removeGroupRule,
     addSchoolEvent,
     updateSchoolEventText,
     toggleEventGrade,
