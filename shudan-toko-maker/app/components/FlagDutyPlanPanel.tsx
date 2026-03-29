@@ -9,7 +9,6 @@ export function FlagDutyPlanPanel() {
     <section className="rounded-[32px] border border-stone-200/90 bg-white/90 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold tracking-[0.16em] text-amber-700">AUTO DUTY</p>
           <h2 className="mt-1 text-2xl font-semibold text-stone-900">旗当番表</h2>
         </div>
         <span className="rounded-full bg-stone-100 px-4 py-2 text-sm font-medium text-stone-700">

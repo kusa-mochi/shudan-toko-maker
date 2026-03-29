@@ -24,7 +24,6 @@ export function HouseholdEditorCard({ household, householdIndex }: HouseholdEdit
     <article className="rounded-[28px] border border-stone-200/90 bg-white/90 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.5)] backdrop-blur sm:p-6">
       <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold tracking-[0.16em] text-amber-700">HOUSEHOLD {householdIndex + 1}</p>
           <h2 className="mt-1 text-2xl font-semibold text-stone-900">ご家庭情報</h2>
         </div>
         <button
