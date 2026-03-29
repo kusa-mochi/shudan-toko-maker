@@ -20,7 +20,7 @@ export function PairRulesPanel() {
   return (
     <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-4 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-5">
       <div>
-        <h2 className="text-xl font-semibold text-stone-900">個別事情</h2>
+        <h2 className="text-xl font-semibold text-stone-900">班編成ルール</h2>
       </div>
       <p className="mt-2 text-sm leading-5 text-stone-600">
         登校班の編成条件と、児童ごとの組み合わせ事情を設定できます。
@@ -28,7 +28,7 @@ export function PairRulesPanel() {
 
       <div className="mt-4">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold text-stone-900">ルール優先順位（全体）</h3>
+          <h3 className="text-lg font-semibold text-stone-900">ルール優先順位</h3>
           <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
             上ほど優先
           </span>
@@ -92,10 +92,10 @@ export function PairRulesPanel() {
         )}
       </div>
 
-      {/* 班の編成ルール */}
+      {/* 基本ルール */}
       <div className="mt-5">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold text-stone-900">班の編成ルール</h3>
+          <h3 className="text-lg font-semibold text-stone-900">基本ルール</h3>
           <button
             type="button"
             onClick={addGroupRule}
@@ -108,7 +108,7 @@ export function PairRulesPanel() {
         <div className="mt-2 space-y-2">
           {groupRules.length === 0 ? (
             <p className="rounded-3xl bg-stone-50 px-4 py-3 text-sm text-stone-600">
-              班の編成ルールはありません。デフォルト値（4〜5人、最年長順に先頭・最後尾配置）が使用されます。
+              基本ルールはありません。デフォルト値（4〜5人、最年長順に先頭・最後尾配置）が使用されます。
             </p>
           ) : null}
 

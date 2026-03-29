@@ -65,7 +65,7 @@ export function PlannerHero() {
               <p className="text-2xl font-semibold text-stone-900">{childCount}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
-              <p className="text-stone-500">個別事情</p>
+              <p className="text-stone-500">児童の組み合わせルール</p>
               <p className="text-2xl font-semibold text-stone-900">{pairRules.length}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
@@ -73,7 +73,7 @@ export function PlannerHero() {
               <p className="text-2xl font-semibold text-stone-900">{schoolEvents.length}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
-              <p className="text-stone-500">班編成ルール</p>
+              <p className="text-stone-500">班編成の基本ルール</p>
               <p className="text-2xl font-semibold text-stone-900">{groupRules.length}</p>
             </div>
           </div>

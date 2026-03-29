@@ -330,7 +330,7 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[],
 
     if (existingIndex !== undefined) {
       warnings.push(
-        `班の編成ルール ${index + 1} は同種ルール ${existingIndex + 1} より優先順位が低いため、未反映です。`,
+        `班編成の基本ルール ${index + 1} は同種ルール ${existingIndex + 1} より優先順位が低いため、未反映です。`,
       );
       return;
     }

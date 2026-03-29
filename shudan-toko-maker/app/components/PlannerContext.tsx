@@ -251,7 +251,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     prioritizedRules.push({
       key: toRuleKey("group", rule.id),
       kind: "group",
-      title: "班の編成ルール",
+      title: "基本ルール",
       detail: describeGroupRule(rule),
     });
   });
@@ -265,7 +265,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     prioritizedRules.push({
       key: toRuleKey("group", rule.id),
       kind: "group",
-      title: "班の編成ルール",
+      title: "基本ルール",
       detail: describeGroupRule(rule),
     });
   });
