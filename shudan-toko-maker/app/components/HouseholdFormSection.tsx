@@ -21,7 +21,7 @@ export function HouseholdFormSection() {
         onClick={addHousehold}
         className="flex w-full items-center justify-center rounded-[28px] border border-dashed border-stone-400 bg-white/70 px-6 py-4 text-base font-semibold text-stone-800 transition hover:border-stone-900 hover:bg-white"
       >
-        家庭を追加する
+        ご家庭を追加する
       </button>
     </div>
   );
