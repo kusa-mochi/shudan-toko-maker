@@ -18,16 +18,16 @@ export function PlannerHero() {
     <section className="overflow-hidden rounded-[32px] border border-stone-200/80 bg-white/90 shadow-[0_24px_80px_-32px_rgba(87,58,18,0.45)] backdrop-blur">
       <div className="grid gap-6 px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
         <div className="space-y-5">
-          <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold tracking-[0.18em] text-amber-900">
+          {/* <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold tracking-[0.18em] text-amber-900">
             集団登校データ入力
-          </span>
+          </span> */}
           <div className="space-y-3">
             <h1 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
-              家庭情報、個別事情、学校行事から、登校班表と旗当番表を自動生成します。
+              登校班・旗当番表メーカー
             </h1>
-            <p className="text-sm leading-7 text-stone-600 sm:text-base">
+            {/* <p className="text-sm leading-7 text-stone-600 sm:text-base">
               各家庭の児童構成と過去の旗当番回数を入力し、さらに「同じ班にしたい」「別々の班にしたい」といった事情や学校行事を登録できます。登校班は4〜5人を基本に、最年長の児童を先頭、その次に最年長の児童を最後尾へ順次配置する考え方で編成します。
-            </p>
+            </p> */}
           </div>
           <div className="flex flex-wrap gap-3 text-sm text-stone-700">
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
