@@ -10,6 +10,7 @@ services:
       - ./shudan-toko-maker:/app:cached
       - node_modules:/app/node_modules
     working_dir: /app
+    user: "1000:1000"
     command: npm run build
 
 volumes:
