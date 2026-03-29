@@ -9,7 +9,7 @@ services:
       - ./shudan-toko-maker:/app:rw
       - node_modules:/app/node_modules
     working_dir: /app
-    command: ["sh", "-c", "npm ci || npm i; chown -R 1000:1000 /app"]
+    command: ["sh", "-c", "npm ci; chown -R 1000:1000 /app"]
     environment:
       - NODE_ENV=development
   copy-modules-to-host:
