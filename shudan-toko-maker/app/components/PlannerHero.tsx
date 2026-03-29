@@ -10,10 +10,8 @@ export function PlannerHero() {
     groupRules,
     schoolEvents,
     lastSavedAt,
-    isPlanStale,
     activeTab,
     switchTab,
-    generatePlans,
   } = usePlannerContext();
 
   return (
@@ -78,23 +76,6 @@ export function PlannerHero() {
               <p className="text-stone-500">班編成ルール</p>
               <p className="text-2xl font-semibold text-stone-900">{groupRules.length}</p>
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <button
-              type="button"
-              onClick={generatePlans}
-              className={`rounded-full px-6 py-3 text-sm font-semibold transition ${
-                isPlanStale
-                  ? "bg-amber-400 text-stone-900 hover:bg-amber-300"
-                  : "bg-stone-900 text-white hover:bg-stone-700"
-              }`}
-            >
-              班編成・当番表をつくる
-            </button>
-            {isPlanStale && (
-              <p className="text-sm font-medium text-amber-700">入力内容に変更があります</p>
-            )}
           </div>
         </div>
       </div>
