@@ -1,7 +1,27 @@
 "use client";
 
+import type { Grade } from "./plannerTypes";
 import { formatGrade } from "./plannerUtils";
 import { usePlannerContext } from "./PlannerContext";
+
+function gradeBadgeClassName(grade: Grade): string {
+  switch (grade) {
+    case 1:
+      return "bg-amber-100 text-amber-900 border-amber-200";
+    case 2:
+      return "bg-lime-100 text-lime-900 border-lime-200";
+    case 3:
+      return "bg-emerald-100 text-emerald-900 border-emerald-200";
+    case 4:
+      return "bg-cyan-100 text-cyan-900 border-cyan-200";
+    case 5:
+      return "bg-sky-100 text-sky-900 border-sky-200";
+    case 6:
+      return "bg-violet-100 text-violet-900 border-violet-200";
+    default:
+      return "bg-stone-100 text-stone-700 border-stone-200";
+  }
+}
 
 export function GroupPlanPanel() {
   const { groupPlan } = usePlannerContext();
@@ -53,11 +73,15 @@ export function GroupPlanPanel() {
                     key={child.id}
                     className="flex items-center justify-between rounded-2xl bg-white px-3 py-3 text-sm text-stone-700"
                   >
-                    <div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-semibold ${gradeBadgeClassName(
+                          child.grade,
+                        )}`}
+                      >
+                        {formatGrade(child.grade)}
+                      </span>
                       <p className="font-medium text-stone-900">{child.name || "氏名未入力"}</p>
-                      <p className="text-stone-500">
-                        {child.householdName || "未入力のご家庭"} / {formatGrade(child.grade)}
-                      </p>
                     </div>
                     <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700">
                       {roleLabel}
