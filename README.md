@@ -29,7 +29,7 @@ dev.cmd
 コンテナ内で実行する場合は以下のようにします。
 
 ```bash
-docker compose -f docker-compose.dev.yml run --rm dev npm install
+docker compose -f docker-compose.dev.yml run --rm --user 1000:1000 dev npm install
 ```
 
 ### 4) コンテナ停止
