@@ -24,7 +24,7 @@ export function createDemoPlannerState(): DemoPlannerState {
     households: [
       {
         id: "household-1",
-        householdName: "山田 太郎 さん宅",
+        householdName: "203号室 山田さん宅",
         memo: "新1年生あり。兄弟は同じ班を希望。",
         pastDutyCount: 1,
         children: [
@@ -35,7 +35,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-2",
-        householdName: "佐藤 美香 さん宅",
+        householdName: "105号室 佐藤さん宅",
         memo: "朝の集合場所がやや遠い。",
         pastDutyCount: 0,
         children: [
@@ -45,7 +45,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-3",
-        householdName: "鈴木 恒一 さん宅",
+        householdName: "12番地 鈴木さん宅",
         memo: "兄弟はいないが近所の子と同班希望。",
         pastDutyCount: 2,
         children: [
@@ -55,7 +55,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-4",
-        householdName: "高橋 由香 さん宅",
+        householdName: "301号室 高橋さん宅",
         memo: "高学年不在。低学年中心。",
         pastDutyCount: 0,
         children: [
@@ -65,7 +65,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-5",
-        householdName: "伊藤 恒一 さん宅",
+        householdName: "8番地 伊藤さん宅",
         memo: "修学旅行週は旗当番不可の想定確認用。",
         pastDutyCount: 1,
         children: [
@@ -75,7 +75,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-6",
-        householdName: "中村 直子 さん宅",
+        householdName: "402号室 中村さん宅",
         memo: "登校集合は西側ルート。",
         pastDutyCount: 0,
         children: [
@@ -85,7 +85,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-7",
-        householdName: "小林 恒一 さん宅",
+        householdName: "15番地 小林さん宅",
         memo: "低学年の付き添い確認用。",
         pastDutyCount: 3,
         children: [
@@ -95,7 +95,7 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-8",
-        householdName: "加藤 亜紀 さん宅",
+        householdName: "201号室 加藤さん宅",
         memo: "兄弟別班の検証候補。",
         pastDutyCount: 1,
         children: [
@@ -105,21 +105,21 @@ export function createDemoPlannerState(): DemoPlannerState {
       },
       {
         id: "household-9",
-        householdName: "吉田 聡 さん宅",
+        householdName: "7番地 吉田さん宅",
         memo: "一人っ子家庭の確認用。",
         pastDutyCount: 2,
         children: [{ id: "child-18", name: "吉田 はな", grade: 6 }],
       },
       {
         id: "household-10",
-        householdName: "松本 由美 さん宅",
+        householdName: "504号室 松本さん宅",
         memo: "一人っ子家庭の確認用。",
         pastDutyCount: 0,
         children: [{ id: "child-19", name: "松本 そうすけ", grade: 3 }],
       },
       {
         id: "household-11",
-        householdName: "井上 恒一 さん宅",
+        householdName: "22番地 井上さん宅",
         memo: "一人っ子家庭の確認用。",
         pastDutyCount: 1,
         children: [{ id: "child-20", name: "井上 みく", grade: 5 }],
