@@ -8,10 +8,8 @@ WORKDIR /app
 RUN apk add --no-cache su-exec
 
 # Create UID/GID 1000 user for local dev container runtime
-RUN addgroup -S appgroup || true \
- && addgroup -g 1000 appgroup 2>/dev/null || true \
+RUN addgroup -g 1000 -S appgroup 2>/dev/null || addgroup -S appgroup 2>/dev/null || true \
  && adduser -S -D -G appgroup -u 1000 appuser 2>/dev/null || adduser -S -D -G appgroup appuser
-
 EXPOSE 3000
 
 CMD ["sh", "-c", "cd /app && su-exec 1000:1000 npm run dev"]
