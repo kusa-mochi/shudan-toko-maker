@@ -1,0 +1,43 @@
+import type { FlagDutySettings } from "./plannerTypes";
+
+type FlagDutySettingsPanelProps = {
+  flagDutySettings: FlagDutySettings;
+  onUpdateFlagDutySetting: (field: keyof FlagDutySettings, value: string) => void;
+};
+
+export function FlagDutySettingsPanel({
+  flagDutySettings,
+  onUpdateFlagDutySetting,
+}: FlagDutySettingsPanelProps) {
+  return (
+    <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-6">
+      <p className="text-sm font-semibold tracking-[0.16em] text-amber-700">FLAG DUTY</p>
+      <h2 className="mt-1 text-2xl font-semibold text-stone-900">旗当番表の生成条件</h2>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        <label className="space-y-2 text-sm font-medium text-stone-700">
+          開始日
+          <input
+            type="date"
+            value={flagDutySettings.startDate}
+            onChange={(event) => onUpdateFlagDutySetting("startDate", event.target.value)}
+            className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
+          />
+        </label>
+
+        <label className="space-y-2 text-sm font-medium text-stone-700">
+          生成する週数
+          <input
+            type="number"
+            min={1}
+            value={flagDutySettings.weeks}
+            onChange={(event) => onUpdateFlagDutySetting("weeks", event.target.value)}
+            className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
+          />
+        </label>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-stone-600">
+        1週間につき1家庭を割り当て、過去の担当回数が少ない家庭を優先します。対象学年の学校行事がある週は、その家庭を候補から外します。
+      </p>
+    </section>
+  );
+}
