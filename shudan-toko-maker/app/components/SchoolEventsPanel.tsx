@@ -1,21 +1,17 @@
+"use client";
+
 import { gradeOptions } from "./plannerTypes";
-import type { Grade, SchoolEvent } from "./plannerTypes";
+import { usePlannerContext } from "./PlannerContext";
 
-type SchoolEventsPanelProps = {
-  schoolEvents: SchoolEvent[];
-  onAddSchoolEvent: () => void;
-  onUpdateSchoolEventText: (eventId: string, field: "title" | "date", value: string) => void;
-  onToggleEventGrade: (eventId: string, grade: Grade) => void;
-  onRemoveSchoolEvent: (eventId: string) => void;
-};
+export function SchoolEventsPanel() {
+  const {
+    schoolEvents,
+    addSchoolEvent,
+    updateSchoolEventText,
+    toggleEventGrade,
+    removeSchoolEvent,
+  } = usePlannerContext();
 
-export function SchoolEventsPanel({
-  schoolEvents,
-  onAddSchoolEvent,
-  onUpdateSchoolEventText,
-  onToggleEventGrade,
-  onRemoveSchoolEvent,
-}: SchoolEventsPanelProps) {
   return (
     <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-6">
       <div className="flex items-center justify-between gap-3">
@@ -25,7 +21,7 @@ export function SchoolEventsPanel({
         </div>
         <button
           type="button"
-          onClick={onAddSchoolEvent}
+          onClick={addSchoolEvent}
           className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-700"
         >
           行事を追加
@@ -50,7 +46,7 @@ export function SchoolEventsPanel({
                 <input
                   type="text"
                   value={eventItem.title}
-                  onChange={(event) => onUpdateSchoolEventText(eventItem.id, "title", event.target.value)}
+                  onChange={(event) => updateSchoolEventText(eventItem.id, "title", event.target.value)}
                   placeholder="例: 修学旅行"
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 />
@@ -61,7 +57,7 @@ export function SchoolEventsPanel({
                 <input
                   type="date"
                   value={eventItem.date}
-                  onChange={(event) => onUpdateSchoolEventText(eventItem.id, "date", event.target.value)}
+                  onChange={(event) => updateSchoolEventText(eventItem.id, "date", event.target.value)}
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 />
               </label>
@@ -85,7 +81,7 @@ export function SchoolEventsPanel({
                       <input
                         type="checkbox"
                         checked={checked}
-                        onChange={() => onToggleEventGrade(eventItem.id, grade.value)}
+                        onChange={() => toggleEventGrade(eventItem.id, grade.value)}
                         className="h-4 w-4 accent-amber-600"
                       />
                       {grade.label}
@@ -97,7 +93,7 @@ export function SchoolEventsPanel({
 
             <button
               type="button"
-              onClick={() => onRemoveSchoolEvent(eventItem.id)}
+                      onClick={() => removeSchoolEvent(eventItem.id)}
               className="mt-3 rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
             >
               この行事を削除

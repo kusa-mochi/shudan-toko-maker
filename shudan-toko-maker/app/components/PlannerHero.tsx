@@ -1,20 +1,17 @@
-type PlannerHeroProps = {
-  householdCount: number;
-  childCount: number;
-  pairRuleCount: number;
-  schoolEventCount: number;
-  lastSavedAt: string;
-  onSaveDraft: () => void;
-};
+"use client";
 
-export function PlannerHero({
-  householdCount,
-  childCount,
-  pairRuleCount,
-  schoolEventCount,
-  lastSavedAt,
-  onSaveDraft,
-}: PlannerHeroProps) {
+import { usePlannerContext } from "./PlannerContext";
+
+export function PlannerHero() {
+  const {
+    households,
+    childCount,
+    pairRules,
+    schoolEvents,
+    lastSavedAt,
+    saveDraft,
+  } = usePlannerContext();
+
   return (
     <section className="overflow-hidden rounded-[32px] border border-stone-200/80 bg-white/90 shadow-[0_24px_80px_-32px_rgba(87,58,18,0.45)] backdrop-blur">
       <div className="grid gap-6 px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
@@ -33,7 +30,7 @@ export function PlannerHero({
           <div className="flex flex-wrap gap-3 text-sm text-stone-700">
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
               <p className="text-stone-500">登録家庭数</p>
-              <p className="text-2xl font-semibold text-stone-900">{householdCount}</p>
+              <p className="text-2xl font-semibold text-stone-900">{households.length}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
               <p className="text-stone-500">登録児童数</p>
@@ -41,11 +38,11 @@ export function PlannerHero({
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
               <p className="text-stone-500">個別事情</p>
-              <p className="text-2xl font-semibold text-stone-900">{pairRuleCount}</p>
+              <p className="text-2xl font-semibold text-stone-900">{pairRules.length}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
               <p className="text-stone-500">学校行事</p>
-              <p className="text-2xl font-semibold text-stone-900">{schoolEventCount}</p>
+              <p className="text-2xl font-semibold text-stone-900">{schoolEvents.length}</p>
             </div>
             <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
               <p className="text-stone-500">入力状態</p>
@@ -66,7 +63,7 @@ export function PlannerHero({
           </ul>
           <button
             type="button"
-            onClick={onSaveDraft}
+            onClick={saveDraft}
             className="mt-6 w-full rounded-2xl bg-amber-300 px-4 py-3 text-sm font-semibold text-stone-900 transition hover:bg-amber-200"
           >
             現在の内容を更新表示

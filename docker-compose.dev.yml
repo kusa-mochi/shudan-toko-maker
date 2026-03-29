@@ -10,6 +10,8 @@ services:
       - HOSTNAME=0.0.0.0
       - PORT=3000
       - NEXT_TELEMETRY_DISABLED=1
+      - CHOKIDAR_USEPOLLING=1
+      - WATCHPACK_POLLING=true
     volumes:
       - ./shudan-toko-maker:/app:cached
       - node_modules:/app/node_modules

@@ -1,14 +1,10 @@
-import type { FlagDutySettings } from "./plannerTypes";
+"use client";
 
-type FlagDutySettingsPanelProps = {
-  flagDutySettings: FlagDutySettings;
-  onUpdateFlagDutySetting: (field: keyof FlagDutySettings, value: string) => void;
-};
+import { usePlannerContext } from "./PlannerContext";
 
-export function FlagDutySettingsPanel({
-  flagDutySettings,
-  onUpdateFlagDutySetting,
-}: FlagDutySettingsPanelProps) {
+export function FlagDutySettingsPanel() {
+  const { flagDutySettings, updateFlagDutySetting } = usePlannerContext();
+
   return (
     <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-6">
       <p className="text-sm font-semibold tracking-[0.16em] text-amber-700">FLAG DUTY</p>
@@ -19,7 +15,7 @@ export function FlagDutySettingsPanel({
           <input
             type="date"
             value={flagDutySettings.startDate}
-            onChange={(event) => onUpdateFlagDutySetting("startDate", event.target.value)}
+            onChange={(event) => updateFlagDutySetting("startDate", event.target.value)}
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
         </label>
@@ -30,7 +26,7 @@ export function FlagDutySettingsPanel({
             type="number"
             min={1}
             value={flagDutySettings.weeks}
-            onChange={(event) => onUpdateFlagDutySetting("weeks", event.target.value)}
+            onChange={(event) => updateFlagDutySetting("weeks", event.target.value)}
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
         </label>

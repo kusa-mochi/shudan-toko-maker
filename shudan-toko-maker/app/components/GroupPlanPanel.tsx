@@ -1,11 +1,11 @@
+"use client";
+
 import { formatGrade } from "./plannerUtils";
-import type { GroupPlan } from "./plannerTypes";
+import { usePlannerContext } from "./PlannerContext";
 
-type GroupPlanPanelProps = {
-  groupPlan: GroupPlan;
-};
+export function GroupPlanPanel() {
+  const { groupPlan } = usePlannerContext();
 
-export function GroupPlanPanel({ groupPlan }: GroupPlanPanelProps) {
   return (
     <section className="rounded-[32px] border border-stone-200/90 bg-white/90 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] sm:p-6">
       <div className="flex items-center justify-between gap-3">

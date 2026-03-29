@@ -1,20 +1,11 @@
-import type { PairRule } from "./plannerTypes";
+"use client";
 
-type PairRulesPanelProps = {
-  pairRules: PairRule[];
-  childOptions: Array<{ id: string; label: string }>;
-  onAddPairRule: () => void;
-  onUpdatePairRule: (ruleId: string, field: keyof PairRule, value: string) => void;
-  onRemovePairRule: (ruleId: string) => void;
-};
+import { usePlannerContext } from "./PlannerContext";
 
-export function PairRulesPanel({
-  pairRules,
-  childOptions,
-  onAddPairRule,
-  onUpdatePairRule,
-  onRemovePairRule,
-}: PairRulesPanelProps) {
+export function PairRulesPanel() {
+  const { pairRules, childOptions, addPairRule, updatePairRule, removePairRule } =
+    usePlannerContext();
+
   return (
     <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-6">
       <div className="flex items-center justify-between gap-3">
@@ -24,7 +15,7 @@ export function PairRulesPanel({
         </div>
         <button
           type="button"
-          onClick={onAddPairRule}
+          onClick={addPairRule}
           className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-700"
         >
           事情を追加
@@ -48,7 +39,7 @@ export function PairRulesPanel({
                 条件
                 <select
                   value={rule.type}
-                  onChange={(event) => onUpdatePairRule(rule.id, "type", event.target.value)}
+                  onChange={(event) => updatePairRule(rule.id, "type", event.target.value)}
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 >
                   <option value="separate">別々の班にしたい</option>
@@ -61,7 +52,7 @@ export function PairRulesPanel({
                 <input
                   type="text"
                   value={rule.note}
-                  onChange={(event) => onUpdatePairRule(rule.id, "note", event.target.value)}
+                  onChange={(event) => updatePairRule(rule.id, "note", event.target.value)}
                   placeholder={`事情 ${ruleIndex + 1} の補足`}
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 />
@@ -71,7 +62,7 @@ export function PairRulesPanel({
                 児童A
                 <select
                   value={rule.childAId}
-                  onChange={(event) => onUpdatePairRule(rule.id, "childAId", event.target.value)}
+                  onChange={(event) => updatePairRule(rule.id, "childAId", event.target.value)}
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 >
                   <option value="">児童を選択</option>
@@ -87,7 +78,7 @@ export function PairRulesPanel({
                 児童B
                 <select
                   value={rule.childBId}
-                  onChange={(event) => onUpdatePairRule(rule.id, "childBId", event.target.value)}
+                  onChange={(event) => updatePairRule(rule.id, "childBId", event.target.value)}
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 >
                   <option value="">児童を選択</option>
@@ -102,7 +93,7 @@ export function PairRulesPanel({
 
             <button
               type="button"
-              onClick={() => onRemovePairRule(rule.id)}
+              onClick={() => removePairRule(rule.id)}
               className="mt-3 rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
             >
               この事情を削除

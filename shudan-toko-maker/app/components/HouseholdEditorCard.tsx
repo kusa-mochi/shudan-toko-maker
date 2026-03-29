@@ -1,29 +1,25 @@
-import type { Grade, Household } from "./plannerTypes";
+"use client";
+
+import { usePlannerContext } from "./PlannerContext";
+import type { Household } from "./plannerTypes";
 import { gradeOptions } from "./plannerTypes";
 
 type HouseholdEditorCardProps = {
   household: Household;
   householdIndex: number;
-  onRemoveHousehold: (householdId: string) => void;
-  onUpdateHouseholdText: (householdId: string, field: "householdName" | "memo", value: string) => void;
-  onUpdateHouseholdDutyCount: (householdId: string, value: string) => void;
-  onAddChild: (householdId: string) => void;
-  onUpdateChildName: (householdId: string, childId: string, name: string) => void;
-  onUpdateChildGrade: (householdId: string, childId: string, grade: Grade) => void;
-  onRemoveChild: (householdId: string, childId: string) => void;
 };
 
-export function HouseholdEditorCard({
-  household,
-  householdIndex,
-  onRemoveHousehold,
-  onUpdateHouseholdText,
-  onUpdateHouseholdDutyCount,
-  onAddChild,
-  onUpdateChildName,
-  onUpdateChildGrade,
-  onRemoveChild,
-}: HouseholdEditorCardProps) {
+export function HouseholdEditorCard({ household, householdIndex }: HouseholdEditorCardProps) {
+  const {
+    removeHousehold,
+    updateHouseholdText,
+    updateHouseholdDutyCount,
+    addChild,
+    updateChildName,
+    updateChildGrade,
+    removeChild,
+  } = usePlannerContext();
+
   return (
     <article className="rounded-[28px] border border-stone-200/90 bg-white/90 p-5 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.5)] backdrop-blur sm:p-6">
       <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
@@ -33,7 +29,7 @@ export function HouseholdEditorCard({
         </div>
         <button
           type="button"
-          onClick={() => onRemoveHousehold(household.id)}
+          onClick={() => removeHousehold(household.id)}
           className="rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
         >
           この家庭を削除
@@ -46,7 +42,7 @@ export function HouseholdEditorCard({
           <input
             type="text"
             value={household.householdName}
-            onChange={(event) => onUpdateHouseholdText(household.id, "householdName", event.target.value)}
+            onChange={(event) => updateHouseholdText(household.id, "householdName", event.target.value)}
             placeholder="例: 山田 太郎 さん宅"
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
@@ -58,7 +54,7 @@ export function HouseholdEditorCard({
             type="number"
             min={0}
             value={household.pastDutyCount}
-            onChange={(event) => onUpdateHouseholdDutyCount(household.id, event.target.value)}
+            onChange={(event) => updateHouseholdDutyCount(household.id, event.target.value)}
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
         </label>
@@ -68,7 +64,7 @@ export function HouseholdEditorCard({
           <input
             type="text"
             value={household.memo}
-            onChange={(event) => onUpdateHouseholdText(household.id, "memo", event.target.value)}
+            onChange={(event) => updateHouseholdText(household.id, "memo", event.target.value)}
             placeholder="例: 新1年生あり / 途中転入予定"
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
@@ -80,7 +76,7 @@ export function HouseholdEditorCard({
           <h3 className="text-lg font-semibold text-stone-900">小学生のお子さん</h3>
           <button
             type="button"
-            onClick={() => onAddChild(household.id)}
+            onClick={() => addChild(household.id)}
             className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-700"
           >
             児童を追加
@@ -98,7 +94,7 @@ export function HouseholdEditorCard({
                 <input
                   type="text"
                   value={child.name}
-                  onChange={(event) => onUpdateChildName(household.id, child.id, event.target.value)}
+                  onChange={(event) => updateChildName(household.id, child.id, event.target.value)}
                   placeholder="例: 山田 花子"
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 />
@@ -108,7 +104,7 @@ export function HouseholdEditorCard({
                 学年
                 <select
                   value={child.grade}
-                  onChange={(event) => onUpdateChildGrade(household.id, child.id, Number.parseInt(event.target.value, 10) as Grade)}
+                  onChange={(event) => updateChildGrade(household.id, child.id, Number.parseInt(event.target.value, 10) as typeof child.grade)}
                   className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500"
                 >
                   {gradeOptions.map((grade) => (
@@ -121,7 +117,7 @@ export function HouseholdEditorCard({
 
               <button
                 type="button"
-                onClick={() => onRemoveChild(household.id, child.id)}
+                onClick={() => removeChild(household.id, child.id)}
                 className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
               >
                 削除
