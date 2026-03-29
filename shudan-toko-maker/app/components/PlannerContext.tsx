@@ -37,6 +37,8 @@ type ChildOption = {
   label: string;
 };
 
+export type ActiveTab = "input" | "results";
+
 type PlannerContextValue = {
   households: Household[];
   pairRules: PairRule[];
@@ -49,6 +51,8 @@ type PlannerContextValue = {
   groupPlan: GroupPlan;
   flagDutyPlan: FlagDutyPlan;
   isPlanStale: boolean;
+  activeTab: ActiveTab;
+  switchTab: (tab: ActiveTab) => void;
   generatePlans: () => void;
   addHousehold: () => void;
   removeHousehold: (householdId: string) => void;
@@ -104,6 +108,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     generateFlagDutySchedule(demoState.households, demoState.schoolEvents, demoState.flagDutySettings),
   );
   const [isPlanStale, setIsPlanStale] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("input");
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -338,10 +343,15 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const switchTab = (tab: ActiveTab) => {
+    setActiveTab(tab);
+  };
+
   const generatePlans = () => {
     setGroupPlan(generateSchoolGroups(households, pairRules, groupRules));
     setFlagDutyPlan(generateFlagDutySchedule(households, schoolEvents, flagDutySettings));
     setIsPlanStale(false);
+    setActiveTab("results");
     setLastSavedAt(
       new Intl.DateTimeFormat("ja-JP", {
         month: "numeric",
@@ -364,6 +374,8 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     groupPlan,
     flagDutyPlan,
     isPlanStale,
+    activeTab,
+    switchTab,
     generatePlans,
     addHousehold,
     removeHousehold,
