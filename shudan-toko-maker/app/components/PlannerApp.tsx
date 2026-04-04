@@ -2,12 +2,10 @@
 
 import { PlannerProvider, usePlannerContext } from "./PlannerContext";
 import { FlagDutyPlanPanel } from "./FlagDutyPlanPanel";
-import { FlagDutySettingsPanel } from "./FlagDutySettingsPanel";
 import { GroupPlanPanel } from "./GroupPlanPanel";
 import { HouseholdFormSection } from "./HouseholdFormSection";
-import { PairRulesPanel } from "./PairRulesPanel";
+import { InputSupportAccordion } from "./InputSupportAccordion";
 import { PlannerHero } from "./PlannerHero";
-import { SchoolEventsPanel } from "./SchoolEventsPanel";
 
 function PlannerContent() {
   const { activeTab, isPlanStale, generatePlans } = usePlannerContext();
@@ -23,14 +21,9 @@ function PlannerContent() {
         <PlannerHero />
 
         {activeTab === "input" && (
-          <section className="grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
+          <section className="space-y-6">
             <HouseholdFormSection />
-
-            <div className="space-y-4 xl:sticky xl:top-6 xl:self-start">
-              <PairRulesPanel />
-              <SchoolEventsPanel />
-              <FlagDutySettingsPanel />
-            </div>
+            <InputSupportAccordion />
           </section>
         )}
 

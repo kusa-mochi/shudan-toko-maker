@@ -86,9 +86,9 @@ export function HouseholdEditorCard({ household, householdIndex }: HouseholdEdit
           {household.children.map((child, childIndex) => (
             <div
               key={child.id}
-              className="grid gap-2 rounded-3xl border border-stone-200 bg-stone-50 p-3 md:grid-cols-[1.5fr_0.8fr_auto] md:items-end"
+              className="grid grid-cols-[minmax(0,1fr)_6.75rem_auto] items-end gap-2 rounded-3xl border border-stone-200 bg-stone-50 p-3 md:grid-cols-[1.5fr_0.8fr_auto]"
             >
-              <label className="space-y-2 text-sm font-medium text-stone-700">
+              <label className="min-w-0 space-y-2 text-sm font-medium text-stone-700">
                 児童 {childIndex + 1} 氏名
                 <input
                   type="text"
@@ -117,7 +117,7 @@ export function HouseholdEditorCard({ household, householdIndex }: HouseholdEdit
               <button
                 type="button"
                 onClick={() => removeChild(household.id, child.id)}
-                className="rounded-2xl border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
+                className="justify-self-end self-end whitespace-nowrap rounded-2xl border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
               >
                 削除
               </button>
