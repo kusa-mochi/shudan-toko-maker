@@ -339,8 +339,8 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[],
     appliedGroupRuleByType.set(rule.type, index);
 
     if (rule.type === "groupSize") {
-      minPerGroup = rule.minSize;
-      maxPerGroup = rule.maxSize;
+      minPerGroup = Math.min(rule.minSize, rule.maxSize);
+      maxPerGroup = Math.max(rule.minSize, rule.maxSize);
     } else if (rule.type === "leaderPosition") {
       assignLeaders = rule.strategy !== "none";
     } else if (rule.type === "rearPosition") {
