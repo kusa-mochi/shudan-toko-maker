@@ -3,6 +3,7 @@ import type {
   ChildRecord,
   FlagDutyPlan,
   FlagDutySettings,
+  FlagDutySlot,
   GeneratedGroup,
   Grade,
   GroupPlan,
@@ -495,6 +496,11 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[],
   };
 }
 
+function parseDateLocal(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function addDays(date: Date, days: number): Date {
   const nextDate = new Date(date);
   nextDate.setDate(nextDate.getDate() + days);
@@ -551,7 +557,7 @@ export function generateFlagDutySchedule(
     };
   }
 
-  const startDate = new Date(`${settings.startDate}T00:00:00`);
+  const startDate = parseDateLocal(settings.startDate);
 
   if (Number.isNaN(startDate.getTime())) {
     return {
@@ -561,7 +567,7 @@ export function generateFlagDutySchedule(
   }
 
   const assignmentCounts = new Map(activeHouseholds.map((household) => [household.id, 0]));
-  const slots = [];
+  const slots: FlagDutySlot[] = [];
   let previousHouseholdId = "";
 
   for (let weekIndex = 0; weekIndex < settings.weeks; weekIndex += 1) {
@@ -576,7 +582,7 @@ export function generateFlagDutySchedule(
               return false;
             }
 
-            const eventDate = new Date(`${eventItem.date}T00:00:00`);
+            const eventDate = parseDateLocal(eventItem.date);
 
             if (Number.isNaN(eventDate.getTime()) || !isSameWeek(slotDate, eventDate)) {
               return false;
