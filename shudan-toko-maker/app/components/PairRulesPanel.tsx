@@ -176,7 +176,7 @@ export function PairRulesPanel() {
       </section>
 
       {editingRule ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4" onClick={closeModal}>
           <div className="w-full max-w-2xl rounded-3xl border border-stone-200 bg-white p-4 shadow-[0_28px_80px_-28px_rgba(0,0,0,0.45)] sm:p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -194,9 +194,10 @@ export function PairRulesPanel() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-xl border border-stone-300 px-3 py-1.5 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
+                aria-label="ルール詳細を閉じる"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-300 text-xl leading-none text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
               >
-                閉じる
+                ×
               </button>
             </div>
 
@@ -329,13 +330,6 @@ export function PairRulesPanel() {
                 className="rounded-full border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 transition hover:border-rose-500 hover:text-rose-800"
               >
                 このルールを削除
-              </button>
-              <button
-                type="button"
-                onClick={closeModal}
-                className="rounded-full bg-stone-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-stone-700"
-              >
-                完了
               </button>
             </div>
           </div>
