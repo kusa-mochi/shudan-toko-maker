@@ -69,7 +69,7 @@ export function InputSupportAccordion() {
                 onClick={() => setOpenPanel((current) => (current === panel.key ? null : panel.key))}
                 aria-expanded={isOpen}
                 aria-controls={`support-panel-${panel.key}`}
-                className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left sm:px-5"
+                className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left sm:px-5 shadow-none"
               >
                 <div>
                   <h3 className="text-lg font-semibold text-stone-900">{panel.title}</h3>

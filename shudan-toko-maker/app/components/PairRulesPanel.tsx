@@ -123,7 +123,7 @@ export function PairRulesPanel() {
                     <button
                       type="button"
                       onClick={() => setEditingRuleKey(rule.key)}
-                      className="min-w-0 flex-1 text-left"
+                      className="min-w-0 flex-1 text-left shadow-none"
                     >
                       <p className="flex items-center gap-2 text-sm font-semibold text-stone-900">
                         <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-900 text-xs text-white">
