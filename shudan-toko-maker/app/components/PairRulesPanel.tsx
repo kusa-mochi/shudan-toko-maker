@@ -91,7 +91,7 @@ export function PairRulesPanel() {
           <button
             type="button"
             onClick={addPairRule}
-            className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-800 transition hover:border-stone-900"
+            className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-700"
           >
             児童の組み合わせを追加
           </button>
