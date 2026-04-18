@@ -170,7 +170,10 @@ export function PairRulesPanel() {
 
       {editingRule ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4" onClick={closeModal}>
-          <div className="w-full max-w-2xl rounded-3xl border border-stone-200 bg-white p-4 shadow-[0_28px_80px_-28px_rgba(0,0,0,0.45)] sm:p-5">
+          <div
+            className="w-full max-w-2xl rounded-3xl border border-stone-200 bg-white p-4 shadow-[0_28px_80px_-28px_rgba(0,0,0,0.45)] sm:p-5"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p
