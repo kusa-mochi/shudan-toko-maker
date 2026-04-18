@@ -35,6 +35,7 @@ PlannerApp --> InputSupportAccordion : renders
 PlannerApp --> GroupPlanPanel : renders
 PlannerApp --> FlagDutyPlanPanel : renders
 HouseholdFormSection --> HouseholdEditorCard : renders list items
+HouseholdFormSection --> HouseholdPreviewPanel : renders
 InputSupportAccordion --> PairRulesPanel : renders
 InputSupportAccordion --> SchoolEventsPanel : renders
 InputSupportAccordion --> FlagDutySettingsPanel : renders
