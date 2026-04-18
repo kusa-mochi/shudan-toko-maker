@@ -86,7 +86,7 @@ export function SchoolEventsPanel() {
 
             <button
               type="button"
-                      onClick={() => removeSchoolEvent(eventItem.id)}
+              onClick={() => removeSchoolEvent(eventItem.id)}
               className="mt-2 rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
             >
               この行事を削除
