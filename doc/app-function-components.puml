@@ -18,6 +18,7 @@ package "app/components/" {
   component "HouseholdFormSection" as HouseholdFormSection <<Function Component>>
   component "HouseholdEditorCard" as HouseholdEditorCard <<Function Component>>
   component "HouseholdPreviewPanel" as HouseholdPreviewPanel <<Function Component>>
+  component "InputSupportAccordion" as InputSupportAccordion <<Function Component>>
   component "PairRulesPanel" as PairRulesPanel <<Function Component>>
   component "SchoolEventsPanel" as SchoolEventsPanel <<Function Component>>
   component "FlagDutySettingsPanel" as FlagDutySettingsPanel <<Function Component>>
@@ -30,13 +31,13 @@ PlannerClientShell ..> PlannerApp : dynamic import\nand renders
 PlannerApp --> PlannerProvider : wraps with provider
 PlannerApp --> PlannerHero : renders
 PlannerApp --> HouseholdFormSection : renders
-PlannerApp --> HouseholdPreviewPanel : renders
-PlannerApp --> PairRulesPanel : renders
-PlannerApp --> SchoolEventsPanel : renders
-PlannerApp --> FlagDutySettingsPanel : renders
+PlannerApp --> InputSupportAccordion : renders
 PlannerApp --> GroupPlanPanel : renders
 PlannerApp --> FlagDutyPlanPanel : renders
 HouseholdFormSection --> HouseholdEditorCard : renders list items
+InputSupportAccordion --> PairRulesPanel : renders
+InputSupportAccordion --> SchoolEventsPanel : renders
+InputSupportAccordion --> FlagDutySettingsPanel : renders
 
 note bottom of RootLayout
   Next.js App Router root layout.

@@ -80,8 +80,6 @@ export function InputSupportAccordion() {
                 </span>
               </button>
 
-              <div
-                id={`support-panel-${panel.key}`}
               {isOpen ? (
                 <div id={`support-panel-${panel.key}`}>
                   <div className="min-h-0 overflow-hidden px-3 pb-3 sm:px-4 sm:pb-4">{renderPanel(panel.key)}</div>
