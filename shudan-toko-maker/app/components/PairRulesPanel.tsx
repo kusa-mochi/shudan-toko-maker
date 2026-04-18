@@ -118,7 +118,7 @@ export function PairRulesPanel() {
                 return (
                   <div
                     key={rule.key}
-                    className="flex items-center justify-between gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-2"
+                    className="flex items-center justify-between gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-2 transition-colors duration-150 has-[>button:hover]:bg-amber-50"
                   >
                     <button
                       type="button"
