@@ -85,7 +85,9 @@ export function InputSupportAccordion() {
                 aria-hidden={!isOpen}
                 className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
               >
-                <div className="min-h-0 overflow-hidden px-3 pb-3 sm:px-4 sm:pb-4">{renderPanel(panel.key)}</div>
+                <div className="min-h-0 overflow-hidden border-t border-stone-200/80 px-4 py-4 sm:px-5">
+                  {renderPanel(panel.key)}
+                </div>
               </div>
             </section>
           );

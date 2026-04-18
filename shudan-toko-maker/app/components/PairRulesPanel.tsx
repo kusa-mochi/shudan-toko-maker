@@ -79,15 +79,8 @@ export function PairRulesPanel() {
 
   return (
     <>
-      <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-4 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-5">
-        <div>
-          <h2 className="text-xl font-semibold text-stone-900">班編成ルール</h2>
-        </div>
-        <p className="mt-2 text-sm leading-5 text-stone-600">
-          ルールをクリックすると詳細をモーダルで編集できます。基本ルールと児童の組み合わせを一つの優先順位で管理します。
-        </p>
-
-        <div className="mt-3 flex flex-wrap gap-2">
+      <div>
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={addGroupRule}
@@ -173,7 +166,7 @@ export function PairRulesPanel() {
             </div>
           )}
         </div>
-      </section>
+      </div>
 
       {editingRule ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4" onClick={closeModal}>

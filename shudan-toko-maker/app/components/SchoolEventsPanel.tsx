@@ -13,11 +13,8 @@ export function SchoolEventsPanel() {
   } = usePlannerContext();
 
   return (
-    <section className="rounded-[32px] border border-stone-200/90 bg-white/85 p-4 shadow-[0_18px_45px_-35px_rgba(87,58,18,0.45)] backdrop-blur sm:p-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-semibold text-stone-900">学校行事</h2>
-        </div>
+    <div>
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={addSchoolEvent}
@@ -26,9 +23,6 @@ export function SchoolEventsPanel() {
           行事を追加
         </button>
       </div>
-      <p className="mt-2 text-sm leading-5 text-stone-600">
-        対象学年が行事で動けない週は、その学年の児童がいる家庭を旗当番候補から外します。
-      </p>
 
       <div className="mt-4 space-y-2">
         {schoolEvents.length === 0 ? (
@@ -100,6 +94,6 @@ export function SchoolEventsPanel() {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }
