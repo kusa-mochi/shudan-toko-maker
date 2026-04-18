@@ -22,5 +22,77 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+@layer base {
+  input,
+  select,
+  textarea {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.72),
+      inset 0 -1px 0 rgba(120, 113, 108, 0.22),
+      0 1px 2px rgba(28, 25, 23, 0.08);
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      background-color 160ms ease;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    box-shadow:
+      0 0 0 3px rgba(245, 158, 11, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      0 10px 20px -16px rgba(120, 53, 15, 0.7);
+  }
+
+  button {
+    cursor: pointer;
+    box-shadow:
+      0 2px 4px rgba(28, 25, 23, 0.12),
+      0 10px 20px -16px rgba(28, 25, 23, 0.7);
+    transition:
+      transform 140ms ease,
+      box-shadow 140ms ease,
+      border-color 140ms ease,
+      background-color 140ms ease,
+      color 140ms ease;
+  }
+
+  button[class*="border-stone-300"],
+  button[class*="border-stone-200"] {
+    background-color: #fef7ec;
+    border-color: #d6d3d1;
+  }
+
+  button[class*="border-stone-300"]:hover:not(:disabled),
+  button[class*="border-stone-200"]:hover:not(:disabled) {
+    background-color: #fde9c9;
+    border-color: #a8a29e;
+  }
+
+  button:hover:not(:disabled) {
+    box-shadow:
+      0 4px 8px rgba(28, 25, 23, 0.14),
+      0 14px 26px -16px rgba(28, 25, 23, 0.72);
+  }
+
+  button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow:
+      0 1px 3px rgba(28, 25, 23, 0.14),
+      0 8px 16px -14px rgba(28, 25, 23, 0.7);
+  }
+
+  button:focus-visible {
+    outline: 2px solid rgba(217, 119, 6, 0.9);
+    outline-offset: 2px;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 }

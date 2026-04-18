@@ -6,6 +6,7 @@ services:
     image: shudan-toko-maker-dev
     environment:
       - NODE_ENV=production
+      - STATIC_EXPORT=true
     volumes:
       - ./shudan-toko-maker:/app:cached
       - node_modules:/app/node_modules

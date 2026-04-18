@@ -1,13 +1,19 @@
 import type { NextConfig } from "next";
 
+const isStaticExport = process.env.STATIC_EXPORT === "true";
+
 const nextConfig: NextConfig = {
-  output: "export",
-  // basePathやassetPrefixが必要な場合はここに追加
-  assetPrefix: './',
+  ...(isStaticExport
+    ? {
+        output: "export",
+        assetPrefix: './',
+      }
+    : {}),
   basePath: '',
   images: {
     unoptimized: true,
   },
+  reactStrictMode: true,
 };
 
 export default nextConfig;

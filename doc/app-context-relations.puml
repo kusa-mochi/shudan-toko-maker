@@ -1,0 +1,49 @@
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment center
+
+package "Context definition" {
+  component "PlannerContext\ncreateContext(...)" as PlannerContext <<React Context>>
+  component "PlannerProvider" as PlannerProvider <<Function Component>>
+  component "usePlannerContext" as UsePlannerContext <<Custom Hook>>
+}
+
+package "Provider entry point" {
+  component "PlannerApp" as PlannerApp <<Function Component>>
+}
+
+package "Context consumers" {
+  component "PlannerHero" as PlannerHero <<Function Component>>
+  component "HouseholdFormSection" as HouseholdFormSection <<Function Component>>
+  component "HouseholdEditorCard" as HouseholdEditorCard <<Function Component>>
+  component "HouseholdPreviewPanel" as HouseholdPreviewPanel <<Function Component>>
+  component "PairRulesPanel" as PairRulesPanel <<Function Component>>
+  component "SchoolEventsPanel" as SchoolEventsPanel <<Function Component>>
+  component "FlagDutySettingsPanel" as FlagDutySettingsPanel <<Function Component>>
+  component "GroupPlanPanel" as GroupPlanPanel <<Function Component>>
+  component "FlagDutyPlanPanel" as FlagDutyPlanPanel <<Function Component>>
+}
+
+PlannerApp --> PlannerProvider : renders provider
+PlannerProvider --> PlannerContext : supplies value via\nPlannerContext.Provider
+UsePlannerContext --> PlannerContext : reads via useContext(...)
+
+PlannerHero --> UsePlannerContext : calls
+HouseholdFormSection --> UsePlannerContext : calls
+HouseholdEditorCard --> UsePlannerContext : calls
+HouseholdPreviewPanel --> UsePlannerContext : calls
+PairRulesPanel --> UsePlannerContext : calls
+SchoolEventsPanel --> UsePlannerContext : calls
+FlagDutySettingsPanel --> UsePlannerContext : calls
+GroupPlanPanel --> UsePlannerContext : calls
+FlagDutyPlanPanel --> UsePlannerContext : calls
+
+note bottom of PlannerContext
+  app/components/PlannerContext.tsx defines
+  the only React Context under app/.
+end note
+
+@enduml
