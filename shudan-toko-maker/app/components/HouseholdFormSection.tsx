@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { usePlannerContext } from "./PlannerContext";
 import { HouseholdEditorCard } from "./HouseholdEditorCard";
-import { HouseholdPreviewPanel } from "./HouseholdPreviewPanel";
 
 export function HouseholdFormSection() {
   const { households, addHousehold } = usePlannerContext();
@@ -64,8 +63,6 @@ export function HouseholdFormSection() {
             </div>
           ))}
         </div>
-
-        {households.length > 0 ? <HouseholdPreviewPanel /> : null}
 
         <button
           ref={bottomAddButtonRef}
