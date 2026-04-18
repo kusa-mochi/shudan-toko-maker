@@ -74,7 +74,6 @@ body {
   }
 
   button:hover:not(:disabled) {
-    transform: translateY(-1px);
     box-shadow:
       0 4px 8px rgba(28, 25, 23, 0.14),
       0 14px 26px -16px rgba(28, 25, 23, 0.72);
