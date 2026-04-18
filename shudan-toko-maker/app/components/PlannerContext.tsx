@@ -21,6 +21,10 @@ import {
   generateSchoolGroups,
   getAllChildRecords,
 } from "./plannerUtils";
+import {
+  parsePlannerInputFromYaml,
+  serializePlannerInputToYaml,
+} from "./plannerYaml";
 import type {
   FlagDutyPlan,
   FlagDutySettings,
@@ -47,6 +51,11 @@ type RulePriorityItem = {
   detail: string;
 };
 
+type YamlImportResult = {
+  success: boolean;
+  message: string;
+};
+
 function toRuleKey(kind: RuleKind, id: string): string {
   return `${kind}:${id}`;
 }
@@ -59,6 +68,26 @@ function parseRuleKey(ruleKey: string): { kind: RuleKind; id: string } | null {
   }
 
   return { kind, id };
+}
+
+function getNextIdNumberFromValues(values: string[], fallback: number): number {
+  const maxValue = values.reduce((currentMax, value) => {
+    const matched = value.match(/(\d+)(?!.*\d)/);
+
+    if (!matched) {
+      return currentMax;
+    }
+
+    const parsed = Number.parseInt(matched[1], 10);
+
+    if (!Number.isFinite(parsed)) {
+      return currentMax;
+    }
+
+    return Math.max(currentMax, parsed);
+  }, fallback - 1);
+
+  return Math.max(fallback, maxValue + 1);
 }
 
 function describeGroupRule(rule: GroupRule): string {
@@ -128,6 +157,8 @@ type PlannerContextValue = {
   toggleEventGrade: (eventId: string, grade: Grade) => void;
   removeSchoolEvent: (eventId: string) => void;
   updateFlagDutySetting: (field: keyof FlagDutySettings, value: string) => void;
+  exportInputToYaml: () => void;
+  importInputFromYaml: (yamlText: string) => YamlImportResult;
 };
 
 const PlannerContext = createContext<PlannerContextValue | null>(null);
@@ -532,6 +563,85 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     setActiveTab(tab);
   };
 
+  const exportInputToYaml = () => {
+    const yamlText = serializePlannerInputToYaml({
+      households,
+      pairRules,
+      groupRules,
+      rulePriorityOrder,
+      schoolEvents,
+      flagDutySettings,
+    });
+
+    const blob = new Blob([yamlText], { type: "text/yaml;charset=utf-8" });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const timestamp = new Date().toISOString().replace(/[:]/g, "-").replace(/\..+$/, "");
+
+    link.href = downloadUrl;
+    link.download = `shudan-toko-input-${timestamp}.yml`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  };
+
+  const importInputFromYaml = (yamlText: string): YamlImportResult => {
+    try {
+      const imported = parsePlannerInputFromYaml(yamlText);
+      const nextRulePriorityOrder =
+        imported.rulePriorityOrder.length > 0
+          ? imported.rulePriorityOrder
+          : [
+              ...imported.groupRules.map((rule) => toRuleKey("group", rule.id)),
+              ...imported.pairRules.map((rule) => toRuleKey("pair", rule.id)),
+            ];
+
+      setHouseholds(imported.households);
+      setPairRules(imported.pairRules);
+      setGroupRules(imported.groupRules);
+      setRulePriorityOrder(nextRulePriorityOrder);
+      setSchoolEvents(imported.schoolEvents);
+      setFlagDutySettings(imported.flagDutySettings);
+      setIsPlanStale(true);
+      setActiveTab("input");
+      setLastSavedAt("");
+
+      householdIdRef.current = getNextIdNumberFromValues(
+        imported.households.map((household) => household.id),
+        householdIdRef.current,
+      );
+      childIdRef.current = getNextIdNumberFromValues(
+        imported.households.flatMap((household) => household.children.map((child) => child.id)),
+        childIdRef.current,
+      );
+      pairRuleIdRef.current = getNextIdNumberFromValues(
+        imported.pairRules.map((rule) => rule.id),
+        pairRuleIdRef.current,
+      );
+      groupRuleIdRef.current = getNextIdNumberFromValues(
+        imported.groupRules.map((rule) => rule.id),
+        groupRuleIdRef.current,
+      );
+      schoolEventIdRef.current = getNextIdNumberFromValues(
+        imported.schoolEvents.map((eventItem) => eventItem.id),
+        schoolEventIdRef.current,
+      );
+
+      return {
+        success: true,
+        message: "YAMLを読み込みました。入力内容を反映しています。",
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "YAML読込に失敗しました。";
+
+      return {
+        success: false,
+        message: `YAML読込に失敗しました: ${errorMessage}`,
+      };
+    }
+  };
+
   const generatePlans = () => {
     setGroupPlan(generateSchoolGroups(households, orderedPairRules, orderedGroupRules));
     setFlagDutyPlan(generateFlagDutySchedule(households, schoolEvents, flagDutySettings));
@@ -583,6 +693,8 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     toggleEventGrade,
     removeSchoolEvent,
     updateFlagDutySetting,
+    exportInputToYaml,
+    importInputFromYaml,
   };
 
   return <PlannerContext.Provider value={value}>{children}</PlannerContext.Provider>;
