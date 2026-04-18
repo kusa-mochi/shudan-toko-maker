@@ -344,7 +344,6 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   };
 
   const addChild = (householdId: string) => {
-    console.log("Adding child to household:", householdId);
     const childId = `child-${childIdRef.current}`;
     childIdRef.current += 1;
 
