@@ -80,11 +80,22 @@ export function InputSupportAccordion() {
                 </span>
               </button>
 
-              {isOpen ? (
-                <div id={`support-panel-${panel.key}`}>
-                  <div className="min-h-0 overflow-hidden px-3 pb-3 sm:px-4 sm:pb-4">{renderPanel(panel.key)}</div>
+              <div
+                className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${
+                  isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                }`}
+              >
+                <div
+                  id={`support-panel-${panel.key}`}
+                  aria-hidden={!isOpen}
+                  inert={!isOpen}
+                  className={`min-h-0 overflow-hidden px-3 sm:px-4 transition-[padding,opacity,visibility] duration-300 ease-out motion-reduce:transition-none ${
+                    isOpen ? "visible pb-3 opacity-100 sm:pb-4" : "invisible pb-0 opacity-0 pointer-events-none"
+                  }`}
+                >
+                  {renderPanel(panel.key)}
                 </div>
-              ) : null}
+              </div>
             </section>
           );
         })}
