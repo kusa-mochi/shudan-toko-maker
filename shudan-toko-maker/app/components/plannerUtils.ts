@@ -250,6 +250,135 @@ function createTargetSizes(childCount: number, groupCount: number, minPerGroup: 
   return Array.from({ length: groupCount }, (_, index) => base + (index < extra ? 1 : 0));
 }
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+}
+
+function canPlaceInGroup(
+  group: InternalGroup,
+  component: GroupComponent,
+  separateMap: Map<string, Set<string>>,
+  maxPerGroup: number,
+): boolean {
+  const currentMembers = getGroupMembers(group);
+
+  if (currentMembers.length + component.members.length > maxPerGroup) {
+    return false;
+  }
+
+  for (const child of component.members) {
+    const blockedIds = separateMap.get(child.id);
+
+    if (!blockedIds) {
+      continue;
+    }
+
+    for (const member of currentMembers) {
+      if (blockedIds.has(member.id)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function backtrackAssign(
+  groups: InternalGroup[],
+  components: GroupComponent[],
+  separateMap: Map<string, Set<string>>,
+  maxPerGroup: number,
+  counter: { count: number; limit: number },
+): boolean {
+  if (components.length === 0) {
+    return true;
+  }
+
+  if (counter.count >= counter.limit) {
+    return false;
+  }
+
+  counter.count += 1;
+
+  let minValid = groups.length + 1;
+  let bestIndex = 0;
+
+  for (let i = 0; i < components.length; i += 1) {
+    let validCount = 0;
+
+    for (const group of groups) {
+      if (canPlaceInGroup(group, components[i], separateMap, maxPerGroup)) {
+        validCount += 1;
+      }
+    }
+
+    if (validCount < minValid) {
+      minValid = validCount;
+      bestIndex = i;
+    }
+  }
+
+  if (minValid === 0) {
+    return false;
+  }
+
+  const component = components[bestIndex];
+  const remaining = [...components.slice(0, bestIndex), ...components.slice(bestIndex + 1)];
+  const shuffledGroups = shuffleArray(groups);
+
+  for (const group of shuffledGroups) {
+    if (!canPlaceInGroup(group, component, separateMap, maxPerGroup)) {
+      continue;
+    }
+
+    group.middle.push(...component.members);
+
+    if (backtrackAssign(groups, remaining, separateMap, maxPerGroup, counter)) {
+      return true;
+    }
+
+    group.middle.splice(group.middle.length - component.members.length, component.members.length);
+  }
+
+  return false;
+}
+
+function detectSeparateViolations(
+  groups: InternalGroup[],
+  separateMap: Map<string, Set<string>>,
+): string[] {
+  const violations: string[] = [];
+
+  for (const group of groups) {
+    const members = getGroupMembers(group);
+
+    for (const member of members) {
+      const blockedIds = separateMap.get(member.id);
+
+      if (!blockedIds) {
+        continue;
+      }
+
+      for (const other of members) {
+        if (member.id < other.id && blockedIds.has(other.id)) {
+          violations.push(
+            `${displayChildName(member)} と ${displayChildName(other)} は「別の班」指定ですが、同じ班になっています。`,
+          );
+        }
+      }
+    }
+  }
+
+  return violations;
+}
+
 function chooseBestGroup(
   groups: InternalGroup[],
   component: GroupComponent,
@@ -447,25 +576,33 @@ export function generateSchoolGroups(households: Household[], rules: PairRule[],
     });
   });
 
-  pendingComponents
-    .sort((a, b) => compareChildrenBySeniority(a.members[0], b.members[0]))
-    .forEach((component) => {
-      const candidate = chooseBestGroup(groups, component, separateMap, maxPerGroup);
+  const savedMiddles = groups.map((group) => [...group.middle]);
+  const shuffledPending = shuffleArray(pendingComponents);
+  const counter = { count: 0, limit: 100_000 };
+  const backtrackSuccess = backtrackAssign(groups, shuffledPending, separateMap, maxPerGroup, counter);
 
-      if (candidate.conflictCount > 0) {
-        warnings.push(
-          `${component.members.map(displayChildName).join("、")} は個別事情を完全には満たせず、近い条件の班に割り当てました。`,
-        );
-      }
-
-      if (candidate.overflowBeyondMax > 0) {
-        warnings.push(
-          `第${candidate.group.index + 1}班は条件を優先したため ${candidate.finalSize} 人になり、${maxPerGroup}人を超えています。`,
-        );
-      }
-
-      candidate.group.middle.push(...component.members);
+  if (!backtrackSuccess) {
+    groups.forEach((group, i) => {
+      group.middle = savedMiddles[i];
     });
+
+    pendingComponents
+      .sort((a, b) => compareChildrenBySeniority(a.members[0], b.members[0]))
+      .forEach((component) => {
+        const candidate = chooseBestGroup(groups, component, separateMap, maxPerGroup);
+
+        if (candidate.overflowBeyondMax > 0) {
+          warnings.push(
+            `第${candidate.group.index + 1}班は条件を優先したため ${candidate.finalSize} 人になり、${maxPerGroup}人を超えています。`,
+          );
+        }
+
+        candidate.group.middle.push(...component.members);
+      });
+
+    const violations = detectSeparateViolations(groups, separateMap);
+    warnings.push(...violations);
+  }
 
   const generatedGroups: GeneratedGroup[] = groups.map((group) => {
     const middleMembers = [...group.middle].sort(compareChildrenBySeniority);
