@@ -5,7 +5,7 @@ import { usePlannerContext } from "./PlannerContext";
 import { exportGroupPlanToPdf, exportFlagDutyPlanToPdf } from "./plannerPdf";
 
 export function PdfExportCard() {
-  const { groupPlan, flagDutyPlan } = usePlannerContext();
+  const { groupPlan, flagDutyPlan, households } = usePlannerContext();
   const [generating, setGenerating] = useState<"group" | "duty" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +27,7 @@ export function PdfExportCard() {
     setError(null);
 
     try {
-      await exportFlagDutyPlanToPdf(flagDutyPlan);
+      await exportFlagDutyPlanToPdf(flagDutyPlan, households);
     } catch {
       setError("旗当番表PDFの生成に失敗しました。");
     } finally {

@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import type { FlagDutyPlan, GeneratedGroup, Grade, GroupPlan } from "./plannerTypes";
+import type { FlagDutyPlan, GeneratedGroup, Grade, GroupPlan, Household } from "./plannerTypes";
 
 const PAGE_WIDTH = 210;
 const PAGE_HEIGHT = 297;
@@ -359,18 +359,28 @@ export async function exportGroupPlanToPdf(groupPlan: GroupPlan): Promise<void> 
   doc.save("班編成表.pdf");
 }
 
+const DUMMY_ROOMS = [
+  "303", "410", "204", "311", "409", "608", "702", "203",
+  "701", "710", "506", "105", "802", "605", "308", "407",
+  "504", "201", "706", "103",
+];
+
 export async function exportFlagDutyPlanToPdf(
   flagDutyPlan: FlagDutyPlan,
+  households: Household[],
 ): Promise<void> {
   const fontBase64 = await loadFontBase64();
   const doc = createPdf();
   registerFont(doc, fontBase64);
 
-  let y = MARGIN_TOP + 5;
-  y = drawTitle(doc, "旗当番表", y);
-  y += 2;
+  const now = new Date();
+  const fiscalYear =
+    now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  const reiwaYear = fiscalYear - 2018;
 
   if (flagDutyPlan.slots.length === 0) {
+    let y = MARGIN_TOP + 5;
+    y = drawTitle(doc, "旗当番表", y);
     doc.setFontSize(10);
     doc.setTextColor(120);
     doc.text(
@@ -383,87 +393,314 @@ export async function exportFlagDutyPlanToPdf(
     return;
   }
 
-  const COL_WEEK_X = MARGIN_LEFT;
-  const COL_DATE_X = MARGIN_LEFT + 14;
-  const COL_HOUSEHOLD_X = MARGIN_LEFT + 52;
-  const COL_EVENT_X = MARGIN_LEFT + 100;
-  const COL_COUNT_X = MARGIN_LEFT + 155;
+  // --- Pivot: group duty dates by household ---
+  const householdDutyMap = new Map<
+    string,
+    { householdName: string; householdId: string; dates: string[] }
+  >();
+  const householdOrder: string[] = [];
 
-  // Table header
-  drawHorizontalLine(doc, y);
-  y += 4.5;
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text("週", COL_WEEK_X, y);
-  doc.text("日付", COL_DATE_X, y);
-  doc.text("担当家庭", COL_HOUSEHOLD_X, y);
-  doc.text("同週の行事", COL_EVENT_X, y);
-  doc.text("累計", COL_COUNT_X, y);
-  doc.setTextColor(0);
-  y += 2;
-  drawHorizontalLine(doc, y);
-  y += 4.5;
-
-  const rowHeight = 6.5;
-
-  for (const [index, slot] of flagDutyPlan.slots.entries()) {
-    y = ensureY(doc, y, rowHeight);
-
-    if (y === MARGIN_TOP) {
-      // Re-draw header on new page
-      drawHorizontalLine(doc, y);
-      y += 4.5;
-      doc.setFontSize(8);
-      doc.setTextColor(100);
-      doc.text("週", COL_WEEK_X, y);
-      doc.text("日付", COL_DATE_X, y);
-      doc.text("担当家庭", COL_HOUSEHOLD_X, y);
-      doc.text("同週の行事", COL_EVENT_X, y);
-      doc.text("累計", COL_COUNT_X, y);
-      doc.setTextColor(0);
-      y += 2;
-      drawHorizontalLine(doc, y);
-      y += 4.5;
+  for (const slot of flagDutyPlan.slots) {
+    const key = slot.householdId || slot.householdName;
+    if (!householdDutyMap.has(key)) {
+      householdDutyMap.set(key, {
+        householdName: slot.householdName,
+        householdId: slot.householdId || "",
+        dates: [],
+      });
+      householdOrder.push(key);
     }
+    const shortDate = slot.dateLabel.replace(/\(.*?\)$/, "").trim();
+    householdDutyMap.get(key)!.dates.push(shortDate);
+  }
 
-    doc.setFontSize(9.5);
-    doc.text(`${index + 1}`, COL_WEEK_X, y);
-    doc.text(slot.dateLabel, COL_DATE_X, y);
-    doc.text(slot.householdName || "—", COL_HOUSEHOLD_X, y);
+  // --- Build display rows ---
+  type DutyRow = {
+    surname: string;
+    roomNumber: string;
+    grades: string;
+    phone: string;
+    dates: string[];
+    isCommittee: boolean;
+  };
 
-    const eventText = slot.blockedEvents.length > 0 ? slot.blockedEvents.join(", ") : "";
-    doc.setFontSize(8);
-    doc.text(eventText, COL_EVENT_X, y);
+  // Extract surname and room number from householdName like "203号室 山田さん宅"
+  function parseSurnameAndRoom(
+    householdName: string,
+    fallbackRoom: string,
+  ): { surname: string; roomNumber: string } {
+    const roomMatch = householdName.match(/(\d+)号室/);
+    const roomNumber = roomMatch ? roomMatch[1] : fallbackRoom;
+    const nameMatch = householdName.match(/号室\s*(.+?)さん宅/);
+    const surname = nameMatch ? nameMatch[1] : householdName.replace(/\d+号室\s*/, "").replace(/さん宅$/, "");
+    return { surname, roomNumber };
+  }
 
-    doc.setFontSize(9.5);
-    doc.text(
-      slot.totalDutyCount !== null ? `${slot.totalDutyCount}回` : "—",
-      COL_COUNT_X,
-      y,
+  const dutyRows: DutyRow[] = [];
+  for (const [idx, key] of householdOrder.entries()) {
+    const entry = householdDutyMap.get(key)!;
+    const household = households.find(
+      (h) =>
+        h.id === entry.householdId ||
+        h.householdName === entry.householdName,
+    );
+    const grades = household
+      ? household.children
+          .map((c) => c.grade)
+          .sort((a, b) => a - b)
+          .join("・")
+      : "";
+
+    const { surname, roomNumber } = parseSurnameAndRoom(
+      entry.householdName,
+      DUMMY_ROOMS[idx % DUMMY_ROOMS.length],
     );
 
-    y += rowHeight;
+    dutyRows.push({
+      surname,
+      roomNumber,
+      grades,
+      phone: "090-1234-5678",
+      dates: entry.dates,
+      isCommittee: idx % 4 === 1,
+    });
   }
 
-  drawHorizontalLine(doc, y - 2.5);
+  const maxDateCols = Math.max(...dutyRows.map((r) => r.dates.length), 1);
+  const totalChildren = households.reduce(
+    (sum, h) => sum + h.children.length,
+    0,
+  );
+
+  // --- Column layout ---
+  const COL_NAME_W = 34; // combined surname + room number
+  const COL_GRADE_W = 16;
+  const COL_PHONE_W = 34;
+  const dateAreaW =
+    USABLE_WIDTH - COL_NAME_W - COL_GRADE_W - COL_PHONE_W;
+  const COL_DATE_W = dateAreaW / maxDateCols;
+  const ROW_H = 8.5;
+
+  // ============================
+  // TOP INSTRUCTIONS (outside box)
+  // ============================
+  let y = MARGIN_TOP + 3;
+
+  doc.setFontSize(9.5);
+  doc.setTextColor(0);
+  doc.text(
+    "朝の声かけは従来通り。下校時は、低学年(1・2年)の下校時に声かけするのが望ましいが、",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 5.5;
+  doc.text(
+    "当番の人の立てる時間で結構です。当番日の月曜日に立てない場合は、次の当番の人へ",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 5.5;
+  doc.text(
+    "かばんを引き継ぐまでに、下校時の声かけをお願いします。(都合のいい日で結構です)",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 8;
+
+  doc.setFontSize(10);
+  doc.text(
+    "＊必ず たすき・腕章をつけてください！",
+    PAGE_WIDTH - MARGIN_RIGHT,
+    y,
+    { align: "right" },
+  );
+  y += 5;
+
+  // ============================
+  // BORDERED BOX
+  // ============================
+  const boxX = MARGIN_LEFT;
+  const boxW = USABLE_WIDTH;
+  const boxStartY = y;
+
+  // Title inside box
+  y += 10;
+  doc.setFontSize(16);
+  doc.text("『朝・下校時の声かけ』当番表", boxX + 8, y);
+
+  doc.setFontSize(10);
+  doc.text(
+    `令和${reiwaYear}年度 AI小学校PTA活動`,
+    boxX + boxW - 5,
+    y,
+    { align: "right" },
+  );
+  y += 9;
+
+  // Town info
+  doc.setFontSize(10);
+  doc.text(
+    `町名：〇×マンション（△△△町）＜${dutyRows.length}軒 ${totalChildren}名＞`,
+    boxX + 5,
+    y,
+  );
   y += 6;
 
-  if (flagDutyPlan.warnings.length > 0) {
-    y = ensureY(doc, y, 10 + flagDutyPlan.warnings.length * 5);
-    doc.setFontSize(9);
-    doc.setTextColor(150, 100, 0);
-    doc.text("⚠ 注意事項:", MARGIN_LEFT, y);
-    y += 5;
+  // Meeting point info
+  doc.setFontSize(8);
+  doc.text("◎声掛場所/〇〇交差点", boxX + 2, y);
+  doc.text("◎時刻/7:50～8:00", boxX + 38, y);
+  doc.text("◎集合場所/□□□", boxX + 95, y);
+  doc.text("◎時刻/7:45", boxX + 125, y);
+  y += 3;
 
-    for (const warning of flagDutyPlan.warnings) {
-      y = ensureY(doc, y, 5);
-      const lines = doc.splitTextToSize(`・${warning}`, USABLE_WIDTH - 4);
-      doc.text(lines, MARGIN_LEFT + 2, y);
-      y += lines.length * 4.5;
+  // ============================
+  // TABLE
+  // ============================
+  doc.setDrawColor(0);
+  doc.setLineWidth(0.3);
+
+  // --- Header row ---
+  let cellX = boxX;
+  const nameHalf = COL_NAME_W / 2;
+
+  doc.rect(cellX, y, COL_NAME_W, ROW_H, "S");
+  doc.setFontSize(9);
+  doc.text("\u6C0F\u540D", cellX + COL_NAME_W / 2, y + ROW_H * 0.65, {
+    align: "center",
+  });
+  cellX += COL_NAME_W;
+
+  doc.rect(cellX, y, COL_GRADE_W, ROW_H, "S");
+  doc.text("学年", cellX + COL_GRADE_W / 2, y + ROW_H * 0.65, {
+    align: "center",
+  });
+  cellX += COL_GRADE_W;
+
+  doc.rect(cellX, y, COL_PHONE_W, ROW_H, "S");
+  doc.text("電話番号", cellX + COL_PHONE_W / 2, y + ROW_H * 0.65, {
+    align: "center",
+  });
+  cellX += COL_PHONE_W;
+
+  doc.rect(cellX, y, dateAreaW, ROW_H, "S");
+  doc.text("担当日", cellX + dateAreaW / 2, y + ROW_H * 0.65, {
+    align: "center",
+  });
+
+  y += ROW_H;
+
+  // --- Data rows ---
+  for (const row of dutyRows) {
+    cellX = boxX;
+
+    // Name cell (surname | dotted line | room number)
+    doc.rect(cellX, y, COL_NAME_W, ROW_H, "S");
+    // Dotted divider line in the middle
+    doc.setDrawColor(160);
+    doc.setLineDashPattern([1, 1], 0);
+    doc.line(cellX + nameHalf, y, cellX + nameHalf, y + ROW_H);
+    doc.setLineDashPattern([], 0);
+    doc.setDrawColor(0);
+    // Surname (left half)
+    doc.setFontSize(11);
+    const displayName = row.isCommittee ? `\u25CE${row.surname}` : row.surname;
+    doc.text(displayName, cellX + nameHalf / 2, y + ROW_H * 0.65, {
+      align: "center",
+    });
+    // Room number (right half)
+    doc.setFontSize(9);
+    doc.text(row.roomNumber, cellX + nameHalf + nameHalf / 2, y + ROW_H * 0.65, {
+      align: "center",
+    });
+    cellX += COL_NAME_W;
+
+    // Grade
+    doc.rect(cellX, y, COL_GRADE_W, ROW_H, "S");
+    doc.text(row.grades, cellX + COL_GRADE_W / 2, y + ROW_H * 0.65, {
+      align: "center",
+    });
+    cellX += COL_GRADE_W;
+
+    // Phone
+    doc.rect(cellX, y, COL_PHONE_W, ROW_H, "S");
+    doc.text(row.phone, cellX + COL_PHONE_W / 2, y + ROW_H * 0.65, {
+      align: "center",
+    });
+    cellX += COL_PHONE_W;
+
+    // Date cells
+    for (let i = 0; i < maxDateCols; i++) {
+      doc.rect(cellX, y, COL_DATE_W, ROW_H, "S");
+      if (i < row.dates.length) {
+        doc.setFontSize(9.5);
+        doc.text(row.dates[i], cellX + COL_DATE_W / 2, y + ROW_H * 0.65, {
+          align: "center",
+        });
+      }
+      cellX += COL_DATE_W;
     }
 
-    doc.setTextColor(0);
+    y += ROW_H;
   }
+
+  // --- Draw outer box border ---
+  const boxEndY = y;
+  doc.setDrawColor(0);
+  doc.setLineWidth(0.5);
+  doc.rect(boxX, boxStartY, boxW, boxEndY - boxStartY, "S");
+
+  // ============================
+  // BOTTOM TEXT (outside box)
+  // ============================
+  y += 10;
+
+  doc.setFontSize(9.5);
+  doc.setTextColor(0);
+  doc.text(
+    "＊個人情報保護法により、名簿の取り扱いには十分にご注意下さい！！",
+    PAGE_WIDTH / 2,
+    y,
+    { align: "center" },
+  );
+  y += 6;
+  doc.text("年度末に各自で処分をお願いします。", PAGE_WIDTH / 2, y, {
+    align: "center",
+  });
+  y += 12;
+
+  doc.setFontSize(9.5);
+  doc.text(
+    "『おはよう！』『気をつけて、いってらっしゃい！』『おかえり！』の声かけをお願いします。",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 5.5;
+  doc.text(
+    "危険な歩き方、他の人に迷惑な行為には必ず注意してあげて下さい。",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 5.5;
+  doc.text(
+    "親御さんも月曜日の忙しい時間に大変だと思いますが、何卒よろしくご協力お願いします。",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 12;
+
+  doc.setFontSize(9.5);
+  doc.text(
+    "＊旗当番に立てない場合、地域委員に相談するか代わりの方にお願いして下さい。",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 5.5;
+  doc.text(
+    "交代できる方が誰もいない場合、その日は当番無しでこども達だけで出発します。",
+    MARGIN_LEFT + 4,
+    y,
+  );
 
   doc.save("旗当番表.pdf");
 }
