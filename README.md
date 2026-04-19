@@ -39,20 +39,20 @@ docker compose -f docker-compose.dev.yml run --rm --user 1000:1000 dev npm insta
 down.cmd
 ```
 
-## YAMLテンプレートの取得と読み込み
+## JSONファイルの保存と読み込み
 
-初回入力時は、画面の「テンプレート取得」からサンプルYAMLをダウンロードして編集すると、形式を確認しながら入力できます。
+入力データはJSON形式で保存・読み込みできます。初回入力時は、画面の「サンプルファイルをダウンロード」からサンプルJSONをダウンロードして編集すると、形式を確認しながら入力できます。
 
 ### 手順
 
 1. `dev.cmd` で開発サーバを起動し、`http://localhost:3000` を開きます。
-2. 「データ入力」タブのヘッダーにある「テンプレート取得」をクリックして、`planner-input-template.json` を保存します。
-3. 保存した `planner-input-template.json` を編集し、UTF-8で保存します（JSON形式）。
-4. 同じ画面の「JSON読込」をクリックし、編集したJSONを選択します。
+2. 「データ入力」タブのヘッダーにある「サンプルファイルをダウンロード」をクリックして、`toban_sample.json` を保存します。
+3. 保存した `toban_sample.json` を編集し、UTF-8で保存します（JSON形式）。
+4. 同じ画面の「開く」をクリックし、編集したJSONを選択します。
 5. 読み込み完了メッセージを確認し、必要に応じて内容を調整します。
 
 ### 補足
 
-- テンプレートファイルは `shudan-toko-maker/public/planner-input-template.json` に配置されています。
-- 現在の入力内容は「JSON出力」ボタンで書き出せます。
-- JSON読込は、テンプレートと同じ JSON 形式に対応しています。
+- サンプルファイルは `shudan-toko-maker/public/toban_sample.json` に配置されています。
+- 現在の入力内容は「保存」ボタンで書き出せます。
+- 保存されるJSONには `schema` と `exportedAt` を含むエンベロープが付与されます。読み込み時はエンベロープ付き・なしの両方に対応しています。
