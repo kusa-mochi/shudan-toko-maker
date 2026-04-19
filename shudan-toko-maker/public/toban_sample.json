@@ -1,6 +1,6 @@
 {
   "schema": "shudan-toko-maker/input-data.v1",
-  "exportedAt": "2026-04-19T07:14:35.317Z",
+  "exportedAt": "2026-04-19T07:54:05.521Z",
   "data": {
     "households": [
       {
@@ -301,7 +301,17 @@
     ],
     "flagDutySettings": {
       "startDate": "2026-05-12",
-      "endDate": "2027-04-20"
+      "endDate": "2027-04-20",
+      "dutyLimits": [
+        {
+          "householdId": "household-2",
+          "maxCount": 3
+        },
+        {
+          "householdId": "household-10",
+          "maxCount": 3
+        }
+      ]
     }
   }
 }

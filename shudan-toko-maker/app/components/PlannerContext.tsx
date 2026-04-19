@@ -157,6 +157,9 @@ type PlannerContextValue = {
   toggleEventGrade: (eventId: string, grade: Grade) => void;
   removeSchoolEvent: (eventId: string) => void;
   updateFlagDutySetting: (field: keyof FlagDutySettings, value: string) => void;
+  addDutyLimit: (householdId: string) => void;
+  updateDutyLimit: (householdId: string, maxCount: number) => void;
+  removeDutyLimit: (householdId: string) => void;
   exportInputToJson: () => void;
   importInputFromJson: (jsonText: string) => JsonImportResult;
 };
@@ -559,6 +562,35 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const addDutyLimit = (householdId: string) => {
+    setFlagDutySettings((current) => {
+      if (current.dutyLimits.some((limit) => limit.householdId === householdId)) {
+        return current;
+      }
+
+      return {
+        ...current,
+        dutyLimits: [...current.dutyLimits, { householdId, maxCount: 1 }],
+      };
+    });
+  };
+
+  const updateDutyLimit = (householdId: string, maxCount: number) => {
+    setFlagDutySettings((current) => ({
+      ...current,
+      dutyLimits: current.dutyLimits.map((limit) =>
+        limit.householdId === householdId ? { ...limit, maxCount } : limit,
+      ),
+    }));
+  };
+
+  const removeDutyLimit = (householdId: string) => {
+    setFlagDutySettings((current) => ({
+      ...current,
+      dutyLimits: current.dutyLimits.filter((limit) => limit.householdId !== householdId),
+    }));
+  };
+
   const switchTab = (tab: ActiveTab) => {
     setActiveTab(tab);
   };
@@ -693,6 +725,9 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     toggleEventGrade,
     removeSchoolEvent,
     updateFlagDutySetting,
+    addDutyLimit,
+    updateDutyLimit,
+    removeDutyLimit,
     exportInputToJson,
     importInputFromJson,
   };

@@ -202,6 +202,20 @@ function readSchoolEvents(value: unknown): SchoolEvent[] {
   });
 }
 
+function readDutyLimits(value: unknown): { householdId: string; maxCount: number }[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((item): item is Record<string, unknown> => isRecord(item))
+    .map((item) => ({
+      householdId: readString(item.householdId ?? "", "dutyLimits[].householdId"),
+      maxCount: readInteger(item.maxCount ?? 0, "dutyLimits[].maxCount", 0),
+    }))
+    .filter((item) => item.householdId !== "");
+}
+
 function readFlagDutySettings(value: unknown): FlagDutySettings {
   if (!isRecord(value)) {
     throw new Error("flagDutySettings の形式が不正です。");
@@ -210,6 +224,7 @@ function readFlagDutySettings(value: unknown): FlagDutySettings {
   return {
     startDate: readString(value.startDate ?? "", "flagDutySettings.startDate"),
     endDate: readString(value.endDate ?? "", "flagDutySettings.endDate"),
+    dutyLimits: readDutyLimits(value.dutyLimits),
   };
 }
 

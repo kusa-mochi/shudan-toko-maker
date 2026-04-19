@@ -720,6 +720,11 @@ export function generateFlagDutySchedule(
   }
 
   const assignmentCounts = new Map(activeHouseholds.map((household) => [household.id, 0]));
+  const dutyLimitMap = new Map(
+    (settings.dutyLimits ?? [])
+      .filter((limit) => limit.householdId && limit.maxCount >= 0)
+      .map((limit) => [limit.householdId, limit.maxCount]),
+  );
   const slots: FlagDutySlot[] = [];
   let previousHouseholdId = "";
 
@@ -749,10 +754,15 @@ export function generateFlagDutySchedule(
           })
           .map((eventItem) => eventItem.title || `${eventItem.date} の学校行事`);
 
+        const currentTotal = household.pastDutyCount + (assignmentCounts.get(household.id) ?? 0);
+        const maxCount = dutyLimitMap.get(household.id);
+        const reachedLimit = maxCount !== undefined && currentTotal >= maxCount;
+
         return {
           household,
           blockedEvents,
-          totalDutyCount: household.pastDutyCount + (assignmentCounts.get(household.id) ?? 0),
+          totalDutyCount: currentTotal,
+          reachedLimit,
           consecutivePenalty: previousHouseholdId === household.id && activeHouseholds.length > 1 ? 1 : 0,
         };
       })
@@ -763,6 +773,10 @@ export function generateFlagDutySchedule(
 
         if (a.blockedEvents.length > 0 && b.blockedEvents.length === 0) {
           return 1;
+        }
+
+        if (a.reachedLimit !== b.reachedLimit) {
+          return a.reachedLimit ? 1 : -1;
         }
 
         if (a.totalDutyCount !== b.totalDutyCount) {
@@ -776,10 +790,24 @@ export function generateFlagDutySchedule(
         return a.household.householdName.localeCompare(b.household.householdName, "ja");
       });
 
-    const selected = rankedHouseholds.find((candidate) => candidate.blockedEvents.length === 0);
+    const selected = rankedHouseholds.find(
+      (candidate) => candidate.blockedEvents.length === 0 && !candidate.reachedLimit,
+    );
 
     if (!selected) {
-      warnings.push(`${formatDateLabel(slotDate)} の週は学校行事の影響で担当可能な家庭が見つかりませんでした。`);
+      const allBlocked = rankedHouseholds.every((c) => c.blockedEvents.length > 0);
+      const allLimited = rankedHouseholds.every((c) => c.reachedLimit);
+      let reason = "担当可能な家庭が見つかりませんでした。";
+
+      if (allBlocked) {
+        reason = "学校行事の影響で担当可能な家庭が見つかりませんでした。";
+      } else if (allLimited) {
+        reason = "すべての家庭が最大担当回数に達しているため、担当可能な家庭が見つかりませんでした。";
+      } else {
+        reason = "学校行事や最大担当回数の制限により、担当可能な家庭が見つかりませんでした。";
+      }
+
+      warnings.push(`${formatDateLabel(slotDate)} の週は${reason}`);
       slots.push({
         id: `slot-${weekIndex + 1}`,
         dateLabel: formatDateLabel(slotDate),

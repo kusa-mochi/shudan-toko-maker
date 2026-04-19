@@ -64,6 +64,7 @@ export function createDemoPlannerState(): DemoPlannerState {
     flagDutySettings: {
       startDate: "",
       endDate: "",
+      dutyLimits: [],
     },
     nextIds: {
       household: 2,
