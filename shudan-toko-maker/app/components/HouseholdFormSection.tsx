@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePlannerContext } from "./PlannerContext";
 import { HouseholdEditorCard } from "./HouseholdEditorCard";
 
@@ -8,16 +8,9 @@ export function HouseholdFormSection() {
   const {
     households,
     addHousehold,
-    exportInputToYaml,
-    importInputFromYaml,
   } = usePlannerContext();
   const bottomAddButtonRef = useRef<HTMLButtonElement | null>(null);
-  const yamlFileInputRef = useRef<HTMLInputElement | null>(null);
   const [isBottomAddVisible, setIsBottomAddVisible] = useState(true);
-  const [yamlFeedback, setYamlFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
 
   useEffect(() => {
     const target = bottomAddButtonRef.current;
@@ -45,37 +38,6 @@ export function HouseholdFormSection() {
   const addButtonClassName =
     "flex items-center justify-center rounded-[28px] border border-dashed border-stone-400 bg-white/70 px-6 py-4 text-base font-semibold text-stone-800 transition hover:border-stone-900 hover:bg-white";
 
-  const handleYamlImportClick = () => {
-    yamlFileInputRef.current?.click();
-  };
-
-  const handleYamlFileSelected = async (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    try {
-      const yamlText = await file.text();
-      const result = importInputFromYaml(yamlText);
-
-      setYamlFeedback({
-        type: result.success ? "success" : "error",
-        message: result.message,
-      });
-    } catch {
-      setYamlFeedback({
-        type: "error",
-        message: "YAMLファイルの読み込みに失敗しました。",
-      });
-    } finally {
-      event.target.value = "";
-    }
-  };
-
   return (
     <section className="space-y-4">
       <header className="rounded-[28px] border border-stone-200/90 bg-white/75 p-4 backdrop-blur sm:p-5">
@@ -89,27 +51,6 @@ export function HouseholdFormSection() {
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
-              onClick={exportInputToYaml}
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800 transition hover:border-stone-900"
-            >
-              YAML出力
-            </button>
-            <button
-              type="button"
-              onClick={handleYamlImportClick}
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800 transition hover:border-stone-900"
-            >
-              YAML読込
-            </button>
-            <a
-              href="/planner-input-template.yml"
-              download
-              className="inline-flex items-center justify-center rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800 transition hover:border-stone-900"
-            >
-              テンプレート取得
-            </a>
-            <button
-              type="button"
               onClick={addHousehold}
               className="rounded-full bg-stone-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-stone-700"
             >
@@ -117,30 +58,6 @@ export function HouseholdFormSection() {
             </button>
           </div>
         </div>
-
-        <p className="mt-2 text-xs text-stone-500">
-          初回は「テンプレート取得」したYAMLを編集して「YAML読込」すると、必要項目をまとめて入力できます。
-        </p>
-
-        <input
-          ref={yamlFileInputRef}
-          type="file"
-          accept=".yml,.yaml,text/yaml,application/x-yaml"
-          onChange={handleYamlFileSelected}
-          className="hidden"
-        />
-
-        {yamlFeedback ? (
-          <p
-            className={`mt-3 rounded-2xl px-3 py-2 text-sm ${
-              yamlFeedback.type === "success"
-                ? "bg-emerald-50 text-emerald-900"
-                : "bg-rose-50 text-rose-900"
-            }`}
-          >
-            {yamlFeedback.message}
-          </p>
-        ) : null}
       </header>
 
       <div className="space-y-3">

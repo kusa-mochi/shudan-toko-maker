@@ -215,7 +215,7 @@ function readFlagDutySettings(value: unknown): FlagDutySettings {
 
 function readPlannerInputData(value: unknown): PlannerInputData {
   if (!isRecord(value)) {
-    throw new Error("YAML のルート形式が不正です。");
+    throw new Error("JSON のルート形式が不正です。");
   }
 
   return {
@@ -228,22 +228,21 @@ function readPlannerInputData(value: unknown): PlannerInputData {
   };
 }
 
-export function serializePlannerInputToYaml(data: PlannerInputData): string {
+export function serializePlannerInputToJson(data: PlannerInputData): string {
   const payload: ExportEnvelope = {
     schema: "shudan-toko-maker/input-data.v1",
     exportedAt: new Date().toISOString(),
     data,
   };
 
-  // JSON is a valid subset of YAML. Output as pretty JSON text with .yml extension.
   return `${JSON.stringify(payload, null, 2)}\n`;
 }
 
-export function parsePlannerInputFromYaml(yamlText: string): PlannerInputData {
-  const normalizedText = yamlText.trim();
+export function parsePlannerInputFromJson(jsonText: string): PlannerInputData {
+  const normalizedText = jsonText.trim();
 
   if (!normalizedText) {
-    throw new Error("YAMLが空です。テンプレートファイルを元に入力してください。");
+    throw new Error("JSONが空です。テンプレートファイルを元に入力してください。");
   }
 
   let parsed: unknown;
@@ -252,7 +251,7 @@ export function parsePlannerInputFromYaml(yamlText: string): PlannerInputData {
     parsed = JSON.parse(normalizedText);
   } catch {
     throw new Error(
-      "この環境では JSON互換YAML 形式のみ読込できます。テンプレート取得したファイルを編集して読み込んでください。",
+      "JSON形式が不正です。テンプレート取得したファイルを編集して読み込んでください。",
     );
   }
 
