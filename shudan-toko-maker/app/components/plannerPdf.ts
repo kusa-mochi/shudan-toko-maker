@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import type { FlagDutyPlan, GroupPlan } from "./plannerTypes";
+import type { FlagDutyPlan, GeneratedGroup, Grade, GroupPlan } from "./plannerTypes";
 
 const PAGE_WIDTH = 210;
 const PAGE_HEIGHT = 297;
@@ -77,96 +77,284 @@ function drawTitle(doc: jsPDF, title: string, y: number): number {
   return y + 14;
 }
 
+const GRADE_CIRCLE_COLORS: Record<number, [number, number, number]> = {
+  1: [245, 158, 11],
+  2: [34, 211, 238],
+  3: [59, 130, 246],
+  4: [234, 179, 8],
+  5: [34, 197, 94],
+  6: [249, 115, 22],
+};
+
+const GROUP_COL_GAP = 4;
+const GROUP_MIN_COL_WIDTH = 32;
+const GROUP_HEADER_H = 9;
+const GROUP_CELL_H = 11;
+const GROUP_ROW_GAP = 10;
+const GRADE_CIRCLE_R = 3;
+const ROLE_AREA_W = 10;
+
+function drawFlagIcon(doc: jsPDF, x: number, y: number): void {
+  doc.setDrawColor(100, 100, 100);
+  doc.setLineWidth(0.4);
+  doc.line(x, y, x, y + 6);
+
+  doc.setFillColor(220, 70, 50);
+  doc.triangle(x + 0.3, y, x + 4.2, y + 1.3, x + 0.3, y + 2.6, "F");
+}
+
+function drawGradeCircle(
+  doc: jsPDF,
+  centerX: number,
+  centerY: number,
+  grade: Grade,
+): void {
+  const color = GRADE_CIRCLE_COLORS[grade] ?? [150, 150, 150];
+  doc.setFillColor(color[0], color[1], color[2]);
+  doc.circle(centerX, centerY, GRADE_CIRCLE_R, "F");
+  doc.setFontSize(8);
+  doc.setTextColor(255, 255, 255);
+  doc.text(`${grade}`, centerX, centerY + 1, { align: "center" });
+  doc.setTextColor(0);
+}
+
+function drawGroupColumn(
+  doc: jsPDF,
+  group: GeneratedGroup,
+  colX: number,
+  startY: number,
+  colWidth: number,
+): void {
+  let y = startY;
+
+  doc.setFillColor(230, 230, 230);
+  doc.setDrawColor(180);
+  doc.setLineWidth(0.3);
+  doc.rect(colX, y, colWidth, GROUP_HEADER_H, "FD");
+
+  doc.setFontSize(9);
+  doc.setTextColor(50);
+  doc.text(
+    `${group.name}（${group.members.length}人）`,
+    colX + colWidth / 2,
+    y + 6,
+    { align: "center" },
+  );
+  doc.setTextColor(0);
+  y += GROUP_HEADER_H;
+
+  for (const member of group.members) {
+    doc.setDrawColor(180);
+    doc.setLineWidth(0.3);
+    doc.rect(colX, y, colWidth, GROUP_CELL_H, "S");
+
+    const isLeader = member.id === group.leaderId;
+    const isRear = member.id === group.rearId;
+
+    if (isLeader || isRear) {
+      drawFlagIcon(doc, colX + 2.5, y + 1.5);
+      doc.setFontSize(4.5);
+      doc.setTextColor(80);
+      doc.text(isLeader ? "班長" : "副班長", colX + 1.5, y + 9.5);
+      doc.setTextColor(0);
+
+      doc.setFontSize(9);
+      doc.text(member.name || "氏名未入力", colX + ROLE_AREA_W + 1, y + 6.5);
+    } else {
+      doc.setFontSize(9);
+      doc.text(member.name || "氏名未入力", colX + 4, y + 6.5);
+    }
+
+    drawGradeCircle(doc, colX + colWidth - 6.5, y + GROUP_CELL_H / 2, member.grade);
+    y += GROUP_CELL_H;
+  }
+}
+
 export async function exportGroupPlanToPdf(groupPlan: GroupPlan): Promise<void> {
   const fontBase64 = await loadFontBase64();
   const doc = createPdf();
   registerFont(doc, fontBase64);
 
+  const groups = groupPlan.groups;
+  const now = new Date();
+
   let y = MARGIN_TOP + 5;
-  y = drawTitle(doc, "集団登校 班編成表", y);
+  const fiscalYear =
+    now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  const reiwaYear = fiscalYear - 2018;
+
+  doc.setFontSize(16);
+  doc.text(
+    `令和${reiwaYear}年度 登校班の並び順`,
+    PAGE_WIDTH / 2,
+    y,
+    { align: "center" },
+  );
+  y += 12;
+
+  if (groups.length === 0) {
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text("班がありません。", PAGE_WIDTH / 2, y + 10, { align: "center" });
+    doc.save("班編成表.pdf");
+    return;
+  }
+
+  const MAX_COLS_PER_ROW = 4;
+  const maxColsPerRow = Math.min(groups.length, MAX_COLS_PER_ROW);
+  const colWidth =
+    (USABLE_WIDTH - (maxColsPerRow - 1) * GROUP_COL_GAP) / maxColsPerRow;
+
+  const groupRows: GeneratedGroup[][] = [];
+
+  for (let i = 0; i < groups.length; i += maxColsPerRow) {
+    groupRows.push(groups.slice(i, i + maxColsPerRow));
+  }
+
+  for (const row of groupRows) {
+    const maxMembersInRow = Math.max(...row.map((g) => g.members.length));
+    const rowTotalHeight =
+      GROUP_HEADER_H + maxMembersInRow * GROUP_CELL_H;
+
+    if (y + rowTotalHeight > MAX_Y) {
+      doc.addPage();
+      y = MARGIN_TOP;
+    }
+
+    for (const [colIndex, group] of row.entries()) {
+      const colX = MARGIN_LEFT + colIndex * (colWidth + GROUP_COL_GAP);
+      drawGroupColumn(doc, group, colX, y, colWidth);
+    }
+
+    y += rowTotalHeight + GROUP_ROW_GAP;
+  }
+
+  y -= GROUP_ROW_GAP;
+  y += 4;
+  doc.setFontSize(10);
+  doc.setTextColor(0);
+  doc.text(
+    `${now.getFullYear()}.${now.getMonth() + 1}.${now.getDate()}`,
+    MARGIN_LEFT + USABLE_WIDTH,
+    y,
+    { align: "right" },
+  );
+  y += 10;
+
+  // --- 注意事項 ---
+  const noticeItems = [
+    "A班の班長がお休みの場合は、各班の班長(6年生優先)が先頭に入ってください。",
+    "各班の班長がお休みの場合も、副班長はそのまま後ろについてください。",
+  ];
+  const noticeNote =
+    "※各班の班長がお休みの時に副班長が先頭にくるというルールは廃止しています";
+
+  if (y + 50 > MAX_Y) {
+    doc.addPage();
+    y = MARGIN_TOP;
+  }
+
+  drawHorizontalLine(doc, y);
+  y += 8;
+
+  doc.setFontSize(12);
+  doc.setTextColor(0);
+  doc.text("注意事項", PAGE_WIDTH / 2, y, { align: "center" });
+  y += 8;
+
+  doc.setFontSize(10);
+
+  for (const item of noticeItems) {
+    if (y + 8 > MAX_Y) {
+      doc.addPage();
+      y = MARGIN_TOP;
+    }
+
+    const lines = doc.splitTextToSize(`●${item}`, USABLE_WIDTH - 8);
+    doc.text(lines, MARGIN_LEFT + 4, y);
+    y += lines.length * 6;
+  }
+
   y += 2;
+  doc.setFontSize(9);
+  const noteLines = doc.splitTextToSize(noticeNote, USABLE_WIDTH - 12);
+  doc.text(noteLines, MARGIN_LEFT + 8, y);
+  y += noteLines.length * 5 + 4;
 
-  const COL_ORDER_X = MARGIN_LEFT;
-  const COL_GRADE_X = MARGIN_LEFT + 14;
-  const COL_NAME_X = MARGIN_LEFT + 30;
-  const COL_ROLE_X = MARGIN_LEFT + 80;
-  const COL_HOUSEHOLD_X = MARGIN_LEFT + 110;
-
-  for (const group of groupPlan.groups) {
-    const rowHeight = 6.5;
-    const headerHeight = 18;
-    const groupHeight = headerHeight + group.members.length * rowHeight + 4;
-
-    y = ensureY(doc, y, groupHeight);
-
-    // Group header
-    doc.setFontSize(12);
-    doc.text(group.name, MARGIN_LEFT, y);
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text(
-      `${group.members.length}人 / 目安 ${group.targetSize}人`,
-      MARGIN_LEFT + doc.getTextWidth(group.name) + 4,
-      y,
-    );
-    doc.setTextColor(0);
-    y += 5;
-
-    // Table header
-    drawHorizontalLine(doc, y);
-    y += 4.5;
-    doc.setFontSize(8);
-    doc.setTextColor(100);
-    doc.text("順", COL_ORDER_X, y);
-    doc.text("学年", COL_GRADE_X, y);
-    doc.text("氏名", COL_NAME_X, y);
-    doc.text("役割", COL_ROLE_X, y);
-    doc.text("ご家庭", COL_HOUSEHOLD_X, y);
-    doc.setTextColor(0);
-    y += 2;
-    drawHorizontalLine(doc, y);
-    y += 4.5;
-
-    // Members
-    doc.setFontSize(9.5);
-
-    for (const [index, member] of group.members.entries()) {
-      y = ensureY(doc, y, rowHeight);
-
-      const role =
-        member.id === group.leaderId
-          ? "先頭"
-          : member.id === group.rearId
-            ? "最後尾"
-            : `中央 ${index}`;
-
-      doc.text(`${index + 1}`, COL_ORDER_X, y);
-      doc.text(`${member.grade}年`, COL_GRADE_X, y);
-      doc.text(member.name || "氏名未入力", COL_NAME_X, y);
-      doc.text(role, COL_ROLE_X, y);
-      doc.text(member.householdName || "—", COL_HOUSEHOLD_X, y);
-      y += rowHeight;
-    }
-
-    drawHorizontalLine(doc, y - 2.5);
-    y += 6;
-  }
-
+  // App warnings (if any)
   if (groupPlan.warnings.length > 0) {
-    y = ensureY(doc, y, 10 + groupPlan.warnings.length * 5);
-    doc.setFontSize(9);
-    doc.setTextColor(150, 100, 0);
-    doc.text("⚠ 注意事項:", MARGIN_LEFT, y);
-    y += 5;
-
     for (const warning of groupPlan.warnings) {
-      y = ensureY(doc, y, 5);
-      doc.text(`・${warning}`, MARGIN_LEFT + 2, y);
-      y += 5;
+      if (y + 8 > MAX_Y) {
+        doc.addPage();
+        y = MARGIN_TOP;
+      }
+
+      doc.setFontSize(10);
+      const wLines = doc.splitTextToSize(`●${warning}`, USABLE_WIDTH - 8);
+      doc.text(wLines, MARGIN_LEFT + 4, y);
+      y += wLines.length * 6;
     }
 
-    doc.setTextColor(0);
+    y += 4;
   }
+
+  // --- お約束 ---
+  const promiseItems = [
+    "下を向かずに前を向いて歩いて、周りをよく見て危険なことがないか注意しましょう。遅刻やあせっている時に、走って人や車にぶつからないように気をつけましょう。",
+    "通行する人のじゃまにならないように歩道に広がらないようにしましょう。",
+    "決められた通学路を通って、安全のため2人以上で登下校しましょう。",
+    "大人はこまっている時に、子どもに助けをもとめることはぜったいにありません。知らない大人から声をかけられてもぜったいについていきません。",
+    "こわい時はにげるか、大きな声を出すか、ぼうはんブザーを鳴らして、自分の命をしっかり守りましょう。",
+  ];
+
+  if (y + 20 > MAX_Y) {
+    doc.addPage();
+    y = MARGIN_TOP;
+  }
+
+  drawHorizontalLine(doc, y);
+  y += 8;
+
+  doc.setFontSize(12);
+  doc.setTextColor(0);
+  doc.text("お約束", PAGE_WIDTH / 2, y, { align: "center" });
+  y += 8;
+
+  doc.setFontSize(10);
+
+  for (const item of promiseItems) {
+    if (y + 8 > MAX_Y) {
+      doc.addPage();
+      y = MARGIN_TOP;
+    }
+
+    const lines = doc.splitTextToSize(`● ${item}`, USABLE_WIDTH - 8);
+    doc.text(lines, MARGIN_LEFT + 4, y);
+    y += lines.length * 5.5 + 2;
+  }
+
+  y += 4;
+
+  // --- フッター ---
+  if (y + 20 > MAX_Y) {
+    doc.addPage();
+    y = MARGIN_TOP;
+  }
+
+  drawHorizontalLine(doc, y);
+  y += 6;
+
+  doc.setFontSize(9);
+  doc.setTextColor(80);
+  doc.text(
+    "ご意見やお困りごと等がございましたら、地域委員までご連絡ください。",
+    MARGIN_LEFT,
+    y,
+  );
+  y += 6;
+
+  doc.text(`◎令和${reiwaYear}年度 地域委員`, MARGIN_LEFT, y);
+  doc.setTextColor(0);
 
   doc.save("班編成表.pdf");
 }
