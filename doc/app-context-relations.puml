@@ -19,7 +19,6 @@ package "Context consumers" {
   component "PlannerHero" as PlannerHero <<Function Component>>
   component "HouseholdFormSection" as HouseholdFormSection <<Function Component>>
   component "HouseholdEditorCard" as HouseholdEditorCard <<Function Component>>
-  component "HouseholdPreviewPanel" as HouseholdPreviewPanel <<Function Component>>
   component "PairRulesPanel" as PairRulesPanel <<Function Component>>
   component "SchoolEventsPanel" as SchoolEventsPanel <<Function Component>>
   component "FlagDutySettingsPanel" as FlagDutySettingsPanel <<Function Component>>
@@ -34,7 +33,6 @@ UsePlannerContext --> PlannerContext : reads via useContext(...)
 PlannerHero --> UsePlannerContext : calls
 HouseholdFormSection --> UsePlannerContext : calls
 HouseholdEditorCard --> UsePlannerContext : calls
-HouseholdPreviewPanel --> UsePlannerContext : calls
 PairRulesPanel --> UsePlannerContext : calls
 SchoolEventsPanel --> UsePlannerContext : calls
 FlagDutySettingsPanel --> UsePlannerContext : calls

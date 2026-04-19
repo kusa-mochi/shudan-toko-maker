@@ -38,3 +38,21 @@ docker compose -f docker-compose.dev.yml run --rm --user 1000:1000 dev npm insta
 ```cmd
 down.cmd
 ```
+
+## YAMLテンプレートの取得と読み込み
+
+初回入力時は、画面の「テンプレート取得」からサンプルYAMLをダウンロードして編集すると、形式を確認しながら入力できます。
+
+### 手順
+
+1. `dev.cmd` で開発サーバを起動し、`http://localhost:3000` を開きます。
+2. 「データ入力」タブのヘッダーにある「テンプレート取得」をクリックして、`planner-input-template.yml` を保存します。
+3. 保存した `planner-input-template.yml` を編集し、UTF-8で保存します（JSON互換YAML形式）。
+4. 同じ画面の「YAML読込」をクリックし、編集したYAMLを選択します。
+5. 読み込み完了メッセージを確認し、必要に応じて内容を調整します。
+
+### 補足
+
+- テンプレートファイルは `shudan-toko-maker/public/planner-input-template.yml` に配置されています。
+- 現在の入力内容は「YAML出力」ボタンで書き出せます。
+- YAML読込は、テンプレートと同じ JSON互換YAML 形式に対応しています。
