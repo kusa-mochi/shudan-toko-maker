@@ -42,9 +42,15 @@ export type SchoolEvent = {
   targetGrades: Grade[];
 };
 
+export type DutyLimit = {
+  householdId: string;
+  maxCount: number;
+};
+
 export type FlagDutySettings = {
   startDate: string;
-  weeks: number;
+  endDate: string;
+  dutyLimits: DutyLimit[];
 };
 
 export type ChildRecord = {

@@ -1,6 +1,7 @@
 "use client";
 
 import { PlannerProvider, usePlannerContext } from "./PlannerContext";
+import { DataFileToolbar } from "./DataFileToolbar";
 import { FlagDutyPlanPanel } from "./FlagDutyPlanPanel";
 import { GroupPlanPanel } from "./GroupPlanPanel";
 import { HouseholdFormSection } from "./HouseholdFormSection";
@@ -22,6 +23,7 @@ function PlannerContent() {
 
         {activeTab === "input" && (
           <section className="space-y-6">
+            <DataFileToolbar />
             <HouseholdFormSection />
             <InputSupportAccordion />
           </section>

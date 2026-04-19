@@ -27,7 +27,7 @@ const supportPanels: SupportPanelItem[] = [
   {
     key: "duty",
     title: "旗当番表の生成条件",
-    description: "開始日と生成週数を設定",
+    description: "開始日と終了日を設定",
   },
 ];
 

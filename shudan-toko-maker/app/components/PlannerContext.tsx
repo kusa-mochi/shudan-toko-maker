@@ -22,9 +22,9 @@ import {
   getAllChildRecords,
 } from "./plannerUtils";
 import {
-  parsePlannerInputFromYaml,
-  serializePlannerInputToYaml,
-} from "./plannerYaml";
+  parsePlannerInputFromJson,
+  serializePlannerInputToJson,
+} from "./plannerJson";
 import type {
   FlagDutyPlan,
   FlagDutySettings,
@@ -51,7 +51,7 @@ type RulePriorityItem = {
   detail: string;
 };
 
-type YamlImportResult = {
+type JsonImportResult = {
   success: boolean;
   message: string;
 };
@@ -157,8 +157,11 @@ type PlannerContextValue = {
   toggleEventGrade: (eventId: string, grade: Grade) => void;
   removeSchoolEvent: (eventId: string) => void;
   updateFlagDutySetting: (field: keyof FlagDutySettings, value: string) => void;
-  exportInputToYaml: () => void;
-  importInputFromYaml: (yamlText: string) => YamlImportResult;
+  addDutyLimit: (householdId: string) => void;
+  updateDutyLimit: (householdId: string, maxCount: number) => void;
+  removeDutyLimit: (householdId: string) => void;
+  exportInputToJson: () => void;
+  importInputFromJson: (jsonText: string) => JsonImportResult;
 };
 
 const PlannerContext = createContext<PlannerContextValue | null>(null);
@@ -555,7 +558,36 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   const updateFlagDutySetting = (field: keyof FlagDutySettings, value: string) => {
     setFlagDutySettings((current) => ({
       ...current,
-      [field]: field === "weeks" ? Math.max(1, Number.parseInt(value || "1", 10) || 1) : value,
+      [field]: value,
+    }));
+  };
+
+  const addDutyLimit = (householdId: string) => {
+    setFlagDutySettings((current) => {
+      if (current.dutyLimits.some((limit) => limit.householdId === householdId)) {
+        return current;
+      }
+
+      return {
+        ...current,
+        dutyLimits: [...current.dutyLimits, { householdId, maxCount: 1 }],
+      };
+    });
+  };
+
+  const updateDutyLimit = (householdId: string, maxCount: number) => {
+    setFlagDutySettings((current) => ({
+      ...current,
+      dutyLimits: current.dutyLimits.map((limit) =>
+        limit.householdId === householdId ? { ...limit, maxCount } : limit,
+      ),
+    }));
+  };
+
+  const removeDutyLimit = (householdId: string) => {
+    setFlagDutySettings((current) => ({
+      ...current,
+      dutyLimits: current.dutyLimits.filter((limit) => limit.householdId !== householdId),
     }));
   };
 
@@ -563,8 +595,8 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     setActiveTab(tab);
   };
 
-  const exportInputToYaml = () => {
-    const yamlText = serializePlannerInputToYaml({
+  const exportInputToJson = () => {
+    const jsonText = serializePlannerInputToJson({
       households,
       pairRules,
       groupRules,
@@ -573,22 +605,22 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
       flagDutySettings,
     });
 
-    const blob = new Blob([yamlText], { type: "text/yaml;charset=utf-8" });
+    const blob = new Blob([jsonText], { type: "application/json;charset=utf-8" });
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     const timestamp = new Date().toISOString().replace(/[:]/g, "-").replace(/\..+$/, "");
 
     link.href = downloadUrl;
-    link.download = `shudan-toko-input-${timestamp}.yml`;
+    link.download = `shudan-toko-input-${timestamp}.json`;
     document.body.append(link);
     link.click();
     link.remove();
     window.URL.revokeObjectURL(downloadUrl);
   };
 
-  const importInputFromYaml = (yamlText: string): YamlImportResult => {
+  const importInputFromJson = (jsonText: string): JsonImportResult => {
     try {
-      const imported = parsePlannerInputFromYaml(yamlText);
+      const imported = parsePlannerInputFromJson(jsonText);
       const nextRulePriorityOrder =
         imported.rulePriorityOrder.length > 0
           ? imported.rulePriorityOrder
@@ -630,14 +662,14 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
 
       return {
         success: true,
-        message: "YAMLを読み込みました。入力内容を反映しています。",
+        message: "JSONを読み込みました。入力内容を反映しています。",
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "YAML読込に失敗しました。";
+      const errorMessage = error instanceof Error ? error.message : "JSON読込に失敗しました。";
 
       return {
         success: false,
-        message: `YAML読込に失敗しました: ${errorMessage}`,
+        message: `JSON読込に失敗しました: ${errorMessage}`,
       };
     }
   };
@@ -693,8 +725,11 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     toggleEventGrade,
     removeSchoolEvent,
     updateFlagDutySetting,
-    exportInputToYaml,
-    importInputFromYaml,
+    addDutyLimit,
+    updateDutyLimit,
+    removeDutyLimit,
+    exportInputToJson,
+    importInputFromJson,
   };
 
   return <PlannerContext.Provider value={value}>{children}</PlannerContext.Provider>;
