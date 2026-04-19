@@ -44,7 +44,7 @@ export type SchoolEvent = {
 
 export type FlagDutySettings = {
   startDate: string;
-  weeks: number;
+  endDate: string;
 };
 
 export type ChildRecord = {

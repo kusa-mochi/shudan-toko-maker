@@ -19,12 +19,11 @@ export function FlagDutySettingsPanel() {
         </label>
 
         <label className="space-y-2 text-sm font-medium text-stone-700">
-          生成する週数
+          終了日
           <input
-            type="number"
-            min={1}
-            value={flagDutySettings.weeks}
-            onChange={(event) => updateFlagDutySetting("weeks", event.target.value)}
+            type="date"
+            value={flagDutySettings.endDate}
+            onChange={(event) => updateFlagDutySetting("endDate", event.target.value)}
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
         </label>

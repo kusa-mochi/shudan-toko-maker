@@ -199,7 +199,7 @@ export function createDemoPlannerState(): DemoPlannerState {
     ],
     flagDutySettings: {
       startDate: "2026-05-12",
-      weeks: 8,
+      endDate: "2026-07-06",
     },
     nextIds: {
       household: 12,

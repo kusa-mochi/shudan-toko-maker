@@ -687,10 +687,10 @@ export function generateFlagDutySchedule(
     };
   }
 
-  if (settings.weeks < 1) {
+  if (!settings.endDate) {
     return {
       slots: [],
-      warnings: ["旗当番表を生成するには、週数を1以上に設定してください。"],
+      warnings: ["旗当番表を生成するには、終了日を入力してください。"],
     };
   }
 
@@ -703,12 +703,32 @@ export function generateFlagDutySchedule(
     };
   }
 
+  const endDate = parseDateLocal(settings.endDate);
+
+  if (Number.isNaN(endDate.getTime())) {
+    return {
+      slots: [],
+      warnings: ["旗当番表の終了日が不正です。"],
+    };
+  }
+
+  if (endDate.getTime() < startDate.getTime()) {
+    return {
+      slots: [],
+      warnings: ["終了日は開始日以降の日付を指定してください。"],
+    };
+  }
+
   const assignmentCounts = new Map(activeHouseholds.map((household) => [household.id, 0]));
   const slots: FlagDutySlot[] = [];
   let previousHouseholdId = "";
 
-  for (let weekIndex = 0; weekIndex < settings.weeks; weekIndex += 1) {
+  for (let weekIndex = 0; ; weekIndex += 1) {
     const slotDate = addDays(startDate, weekIndex * 7);
+
+    if (slotDate.getTime() > endDate.getTime()) {
+      break;
+    }
 
     const rankedHouseholds = activeHouseholds
       .map((household) => {

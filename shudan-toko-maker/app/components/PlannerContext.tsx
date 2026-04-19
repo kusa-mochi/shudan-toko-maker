@@ -555,7 +555,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   const updateFlagDutySetting = (field: keyof FlagDutySettings, value: string) => {
     setFlagDutySettings((current) => ({
       ...current,
-      [field]: field === "weeks" ? Math.max(1, Number.parseInt(value || "1", 10) || 1) : value,
+      [field]: value,
     }));
   };
 

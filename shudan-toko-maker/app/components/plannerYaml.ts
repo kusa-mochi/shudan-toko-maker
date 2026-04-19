@@ -209,7 +209,7 @@ function readFlagDutySettings(value: unknown): FlagDutySettings {
 
   return {
     startDate: readString(value.startDate ?? "", "flagDutySettings.startDate"),
-    weeks: readInteger(value.weeks, "flagDutySettings.weeks", 1),
+    endDate: readString(value.endDate ?? "", "flagDutySettings.endDate"),
   };
 }
 
