@@ -20,6 +20,7 @@ import {
   generateFlagDutySchedule,
   generateSchoolGroups,
   getAllChildRecords,
+  formatHouseholdLabel,
 } from "./plannerUtils";
 import {
   parsePlannerInputFromJson,
@@ -134,7 +135,7 @@ type PlannerContextValue = {
   removeHousehold: (householdId: string) => void;
   updateHouseholdText: (
     householdId: string,
-    field: "householdName" | "memo",
+    field: "addressOrRoom" | "householdName" | "memo",
     value: string,
   ) => void;
   updateHouseholdDutyCount: (householdId: string, value: string) => void;
@@ -236,7 +237,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     .sort(compareChildrenBySeniority)
     .map((child) => ({
       id: child.id,
-      label: `${child.householdName || "未入力のご家庭"} / ${displayChildName(child)}`,
+      label: `${formatHouseholdLabel(child)} / ${displayChildName(child)}`,
     }));
 
   const childOptionMap = new Map(childOptions.map((child) => [child.id, child.label]));
@@ -327,7 +328,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
 
   const updateHouseholdText = (
     householdId: string,
-    field: "householdName" | "memo",
+    field: "addressOrRoom" | "householdName" | "memo",
     value: string,
   ) => {
     setHouseholds((current) =>

@@ -66,6 +66,28 @@ function readRulePriorityOrder(value: unknown): string[] {
     .filter((ruleKey) => ruleKey.startsWith("group:") || ruleKey.startsWith("pair:"));
 }
 
+function splitLegacyHouseholdName(combined: string): { addressOrRoom: string; householdName: string } {
+  const trimmed = combined.trim();
+
+  if (!trimmed) {
+    return { addressOrRoom: "", householdName: "" };
+  }
+
+  const matched = trimmed.match(/^(\S+(?:号室|番地))\s+(.+)$/);
+
+  if (matched) {
+    return {
+      addressOrRoom: matched[1],
+      householdName: matched[2],
+    };
+  }
+
+  return {
+    addressOrRoom: "",
+    householdName: trimmed,
+  };
+}
+
 function readHouseholds(value: unknown): Household[] {
   if (!Array.isArray(value)) {
     throw new Error("households は配列である必要があります。");
@@ -100,7 +122,25 @@ function readHouseholds(value: unknown): Household[] {
 
     return {
       id: readString(item.id, `households[${householdIndex}].id`),
-      householdName: readString(item.householdName ?? "", `households[${householdIndex}].householdName`),
+      ...(() => {
+        const explicitAddress = readString(
+          item.addressOrRoom ?? "",
+          `households[${householdIndex}].addressOrRoom`,
+        );
+        const explicitHouseholdName = readString(
+          item.householdName ?? "",
+          `households[${householdIndex}].householdName`,
+        );
+
+        if (explicitAddress || !explicitHouseholdName) {
+          return {
+            addressOrRoom: explicitAddress,
+            householdName: explicitHouseholdName,
+          };
+        }
+
+        return splitLegacyHouseholdName(explicitHouseholdName);
+      })(),
       memo: readString(item.memo ?? "", `households[${householdIndex}].memo`),
       pastDutyCount: readInteger(item.pastDutyCount ?? 0, `households[${householdIndex}].pastDutyCount`, 0),
       children,

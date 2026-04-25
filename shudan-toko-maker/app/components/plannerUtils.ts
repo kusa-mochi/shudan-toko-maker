@@ -36,11 +36,33 @@ export function createChild(id: string): Child {
 export function createHousehold(householdId: string, childId: string): Household {
   return {
     id: householdId,
+    addressOrRoom: "",
     householdName: "",
     memo: "",
     pastDutyCount: 0,
     children: [createChild(childId)],
   };
+}
+
+export function formatHouseholdLabel(
+  household: Pick<Household, "addressOrRoom" | "householdName">,
+): string {
+  const address = household.addressOrRoom.trim();
+  const name = household.householdName.trim();
+
+  if (name && address) {
+    return `${name} (${address})`;
+  }
+
+  if (name) {
+    return name;
+  }
+
+  if (address) {
+    return address;
+  }
+
+  return "未入力のご家庭";
 }
 
 export function createPairRule(id: string, children: ChildRecord[]): PairRule {
@@ -86,6 +108,12 @@ export function compareChildrenBySeniority(a: ChildRecord, b: ChildRecord): numb
     return b.grade - a.grade;
   }
 
+  const householdAddressComparison = a.addressOrRoom.localeCompare(b.addressOrRoom, "ja");
+
+  if (householdAddressComparison !== 0) {
+    return householdAddressComparison;
+  }
+
   const householdComparison = a.householdName.localeCompare(b.householdName, "ja");
 
   if (householdComparison !== 0) {
@@ -102,6 +130,7 @@ export function getAllChildRecords(households: Household[]): ChildRecord[] {
       name: child.name,
       grade: child.grade,
       householdId: household.id,
+      addressOrRoom: household.addressOrRoom,
       householdName: household.householdName,
     })),
   );
@@ -787,7 +816,13 @@ export function generateFlagDutySchedule(
           return a.consecutivePenalty - b.consecutivePenalty;
         }
 
-        return a.household.householdName.localeCompare(b.household.householdName, "ja");
+        const nameCompare = a.household.householdName.localeCompare(b.household.householdName, "ja");
+
+        if (nameCompare !== 0) {
+          return nameCompare;
+        }
+
+        return a.household.addressOrRoom.localeCompare(b.household.addressOrRoom, "ja");
       });
 
     const selected = rankedHouseholds.find(
@@ -811,6 +846,7 @@ export function generateFlagDutySchedule(
       slots.push({
         id: `slot-${weekIndex + 1}`,
         dateLabel: formatDateLabel(slotDate),
+        addressOrRoom: "",
         householdName: "未割当",
         blockedEvents: rankedHouseholds.flatMap((candidate) => candidate.blockedEvents),
         totalDutyCount: null,
@@ -824,7 +860,8 @@ export function generateFlagDutySchedule(
     slots.push({
       id: `slot-${weekIndex + 1}`,
       dateLabel: formatDateLabel(slotDate),
-      householdName: selected.household.householdName || "未入力のご家庭",
+      addressOrRoom: selected.household.addressOrRoom,
+      householdName: selected.household.householdName,
       householdId: selected.household.id,
       blockedEvents: selected.blockedEvents,
       totalDutyCount: selected.household.pastDutyCount + (assignmentCounts.get(selected.household.id) ?? 0),

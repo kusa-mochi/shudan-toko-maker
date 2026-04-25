@@ -359,12 +359,6 @@ export async function exportGroupPlanToPdf(groupPlan: GroupPlan): Promise<void> 
   doc.save("班編成表.pdf");
 }
 
-const DUMMY_ROOMS = [
-  "303", "410", "204", "311", "409", "608", "702", "203",
-  "701", "710", "506", "105", "802", "605", "308", "407",
-  "504", "201", "706", "103",
-];
-
 export async function exportFlagDutyPlanToPdf(
   flagDutyPlan: FlagDutyPlan,
   households: Household[],
@@ -396,7 +390,12 @@ export async function exportFlagDutyPlanToPdf(
   // --- Pivot: group duty dates by household ---
   const householdDutyMap = new Map<
     string,
-    { householdName: string; householdId: string; dates: string[] }
+    {
+      householdName: string;
+      addressOrRoom: string;
+      householdId: string;
+      dates: string[];
+    }
   >();
   const householdOrder: string[] = [];
 
@@ -405,6 +404,7 @@ export async function exportFlagDutyPlanToPdf(
     if (!householdDutyMap.has(key)) {
       householdDutyMap.set(key, {
         householdName: slot.householdName,
+        addressOrRoom: slot.addressOrRoom,
         householdId: slot.householdId || "",
         dates: [],
       });
@@ -416,25 +416,13 @@ export async function exportFlagDutyPlanToPdf(
 
   // --- Build display rows ---
   type DutyRow = {
-    surname: string;
-    roomNumber: string;
+    householdName: string;
+    addressOrRoom: string;
     grades: string;
     phone: string;
     dates: string[];
     isCommittee: boolean;
   };
-
-  // Extract surname and room number from householdName like "203号室 山田さん宅"
-  function parseSurnameAndRoom(
-    householdName: string,
-    fallbackRoom: string,
-  ): { surname: string; roomNumber: string } {
-    const roomMatch = householdName.match(/(\d+)号室/);
-    const roomNumber = roomMatch ? roomMatch[1] : fallbackRoom;
-    const nameMatch = householdName.match(/号室\s*(.+?)さん宅/);
-    const surname = nameMatch ? nameMatch[1] : householdName.replace(/\d+号室\s*/, "").replace(/さん宅$/, "");
-    return { surname, roomNumber };
-  }
 
   const dutyRows: DutyRow[] = [];
   for (const [idx, key] of householdOrder.entries()) {
@@ -451,14 +439,9 @@ export async function exportFlagDutyPlanToPdf(
           .join("・")
       : "";
 
-    const { surname, roomNumber } = parseSurnameAndRoom(
-      entry.householdName,
-      DUMMY_ROOMS[idx % DUMMY_ROOMS.length],
-    );
-
     dutyRows.push({
-      surname,
-      roomNumber,
+      householdName: household?.householdName || entry.householdName,
+      addressOrRoom: household?.addressOrRoom || entry.addressOrRoom,
       grades,
       phone: "090-1234-5678",
       dates: entry.dates,
@@ -594,7 +577,7 @@ export async function exportFlagDutyPlanToPdf(
   for (const row of dutyRows) {
     cellX = boxX;
 
-    // Name cell (surname | dotted line | room number)
+    // Name cell (household name | dotted line | address/room)
     doc.rect(cellX, y, COL_NAME_W, ROW_H, "S");
     // Dotted divider line in the middle
     doc.setDrawColor(160);
@@ -602,15 +585,16 @@ export async function exportFlagDutyPlanToPdf(
     doc.line(cellX + nameHalf, y, cellX + nameHalf, y + ROW_H);
     doc.setLineDashPattern([], 0);
     doc.setDrawColor(0);
-    // Surname (left half)
+    // Household name (left half)
     doc.setFontSize(11);
-    const displayName = row.isCommittee ? `\u25CE${row.surname}` : row.surname;
+    const baseName = row.householdName || "未入力";
+    const displayName = row.isCommittee ? `\u25CE${baseName}` : baseName;
     doc.text(displayName, cellX + nameHalf / 2, y + ROW_H * 0.65, {
       align: "center",
     });
-    // Room number (right half)
+    // Address / room number (right half)
     doc.setFontSize(9);
-    doc.text(row.roomNumber, cellX + nameHalf + nameHalf / 2, y + ROW_H * 0.65, {
+    doc.text(row.addressOrRoom, cellX + nameHalf + nameHalf / 2, y + ROW_H * 0.65, {
       align: "center",
     });
     cellX += COL_NAME_W;

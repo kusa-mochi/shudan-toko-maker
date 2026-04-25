@@ -5,7 +5,8 @@
     "households": [
       {
         "id": "household-1",
-        "householdName": "203号室 山田さん宅",
+        "addressOrRoom": "203号室",
+        "householdName": "山田",
         "memo": "新1年生あり。兄弟は同じ班を希望。",
         "pastDutyCount": 1,
         "children": [
@@ -28,7 +29,8 @@
       },
       {
         "id": "household-2",
-        "householdName": "105号室 佐藤さん宅",
+        "addressOrRoom": "105号室",
+        "householdName": "佐藤",
         "memo": "朝の集合場所がやや遠い。",
         "pastDutyCount": 0,
         "children": [
@@ -46,7 +48,8 @@
       },
       {
         "id": "household-3",
-        "householdName": "12番地 鈴木さん宅",
+        "addressOrRoom": "12番地",
+        "householdName": "鈴木",
         "memo": "近所の子と同班希望。",
         "pastDutyCount": 2,
         "children": [
@@ -64,7 +67,8 @@
       },
       {
         "id": "household-4",
-        "householdName": "301号室 高橋さん宅",
+        "addressOrRoom": "301号室",
+        "householdName": "高橋",
         "memo": "高学年不在。低学年中心。",
         "pastDutyCount": 0,
         "children": [
@@ -82,7 +86,8 @@
       },
       {
         "id": "household-5",
-        "householdName": "8番地 伊藤さん宅",
+        "addressOrRoom": "8番地",
+        "householdName": "伊藤",
         "memo": "修学旅行週は旗当番不可の想定。",
         "pastDutyCount": 1,
         "children": [
@@ -100,7 +105,8 @@
       },
       {
         "id": "household-6",
-        "householdName": "402号室 中村さん宅",
+        "addressOrRoom": "402号室",
+        "householdName": "中村",
         "memo": "西側ルートで登校。",
         "pastDutyCount": 0,
         "children": [
@@ -118,7 +124,8 @@
       },
       {
         "id": "household-7",
-        "householdName": "15番地 小林さん宅",
+        "addressOrRoom": "15番地",
+        "householdName": "小林",
         "memo": "低学年の付き添い確認用。",
         "pastDutyCount": 3,
         "children": [
@@ -136,7 +143,8 @@
       },
       {
         "id": "household-8",
-        "householdName": "201号室 加藤さん宅",
+        "addressOrRoom": "201号室",
+        "householdName": "加藤",
         "memo": "兄弟別班の検証候補。",
         "pastDutyCount": 1,
         "children": [
@@ -154,7 +162,8 @@
       },
       {
         "id": "household-9",
-        "householdName": "7番地 吉田さん宅",
+        "addressOrRoom": "7番地",
+        "householdName": "吉田",
         "memo": "",
         "pastDutyCount": 2,
         "children": [
@@ -167,7 +176,8 @@
       },
       {
         "id": "household-10",
-        "householdName": "504号室 松本さん宅",
+        "addressOrRoom": "504号室",
+        "householdName": "松本",
         "memo": "",
         "pastDutyCount": 0,
         "children": [
@@ -180,7 +190,8 @@
       },
       {
         "id": "household-11",
-        "householdName": "22番地 井上さん宅",
+        "addressOrRoom": "22番地",
+        "householdName": "井上",
         "memo": "",
         "pastDutyCount": 1,
         "children": [
@@ -193,7 +204,8 @@
       },
       {
         "id": "household-12",
-        "householdName": "101号室 木村さん宅",
+        "addressOrRoom": "101号室",
+        "householdName": "木村",
         "memo": "",
         "pastDutyCount": 0,
         "children": [
