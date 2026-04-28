@@ -1,6 +1,8 @@
 import type {
+  FlagDutyPlan,
   FlagDutySettings,
   Grade,
+  GroupPlan,
   GroupRule,
   Household,
   PairRule,
@@ -16,10 +18,20 @@ export type PlannerInputData = {
   flagDutySettings: FlagDutySettings;
 };
 
+export type PlannerResultsData = {
+  groupPlan: GroupPlan;
+  flagDutyPlan: FlagDutyPlan;
+};
+
+export type PlannerSnapshotData = {
+  input: PlannerInputData;
+  results: PlannerResultsData;
+};
+
 type ExportEnvelope = {
-  schema: "shudan-toko-maker/input-data.v1";
+  schema: "shudan-toko-maker/snapshot.v2";
   exportedAt: string;
-  data: PlannerInputData;
+  data: PlannerSnapshotData;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -44,6 +56,30 @@ function readInteger(value: unknown, fieldName: string, minValue = 0): number {
   }
 
   return value;
+}
+
+function readOptionalString(value: unknown, fieldName: string): string | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  return readString(value, fieldName);
+}
+
+function readNullableInteger(value: unknown, fieldName: string, minValue = 0): number | null {
+  if (value === null) {
+    return null;
+  }
+
+  return readInteger(value, fieldName, minValue);
+}
+
+function readStringArray(value: unknown, fieldName: string): string[] {
+  if (!Array.isArray(value)) {
+    throw new Error(`${fieldName} は配列である必要があります。`);
+  }
+
+  return value.map((item, index) => readString(item, `${fieldName}[${index}]`));
 }
 
 function readGrade(value: unknown, fieldName: string): Grade {
@@ -283,9 +319,137 @@ function readPlannerInputData(value: unknown): PlannerInputData {
   };
 }
 
-export function serializePlannerInputToJson(data: PlannerInputData): string {
+function readGroupPlan(value: unknown): GroupPlan {
+  if (!isRecord(value)) {
+    throw new Error("results.groupPlan の形式が不正です。");
+  }
+
+  if (!Array.isArray(value.groups)) {
+    throw new Error("results.groupPlan.groups は配列である必要があります。");
+  }
+
+  const groups = value.groups.map((group, groupIndex) => {
+    if (!isRecord(group)) {
+      throw new Error(`results.groupPlan.groups[${groupIndex}] の形式が不正です。`);
+    }
+
+    if (!Array.isArray(group.members)) {
+      throw new Error(`results.groupPlan.groups[${groupIndex}].members は配列である必要があります。`);
+    }
+
+    const members = group.members.map((member, memberIndex) => {
+      if (!isRecord(member)) {
+        throw new Error(
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}] の形式が不正です。`,
+        );
+      }
+
+      return {
+        id: readString(
+          member.id,
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}].id`,
+        ),
+        name: readString(
+          member.name ?? "",
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}].name`,
+        ),
+        grade: readGrade(
+          member.grade,
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}].grade`,
+        ),
+        householdId: readString(
+          member.householdId,
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}].householdId`,
+        ),
+        addressOrRoom: readString(
+          member.addressOrRoom ?? "",
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}].addressOrRoom`,
+        ),
+        householdName: readString(
+          member.householdName ?? "",
+          `results.groupPlan.groups[${groupIndex}].members[${memberIndex}].householdName`,
+        ),
+      };
+    });
+
+    return {
+      name: readString(group.name, `results.groupPlan.groups[${groupIndex}].name`),
+      targetSize: readInteger(group.targetSize, `results.groupPlan.groups[${groupIndex}].targetSize`, 1),
+      members,
+      leaderId: readOptionalString(group.leaderId, `results.groupPlan.groups[${groupIndex}].leaderId`),
+      rearId: readOptionalString(group.rearId, `results.groupPlan.groups[${groupIndex}].rearId`),
+    };
+  });
+
+  return {
+    groups,
+    warnings: readStringArray(value.warnings ?? [], "results.groupPlan.warnings"),
+  };
+}
+
+function readFlagDutyPlan(value: unknown): FlagDutyPlan {
+  if (!isRecord(value)) {
+    throw new Error("results.flagDutyPlan の形式が不正です。");
+  }
+
+  if (!Array.isArray(value.slots)) {
+    throw new Error("results.flagDutyPlan.slots は配列である必要があります。");
+  }
+
+  const slots = value.slots.map((slot, slotIndex) => {
+    if (!isRecord(slot)) {
+      throw new Error(`results.flagDutyPlan.slots[${slotIndex}] の形式が不正です。`);
+    }
+
+    return {
+      id: readString(slot.id, `results.flagDutyPlan.slots[${slotIndex}].id`),
+      dateLabel: readString(slot.dateLabel, `results.flagDutyPlan.slots[${slotIndex}].dateLabel`),
+      addressOrRoom: readString(
+        slot.addressOrRoom ?? "",
+        `results.flagDutyPlan.slots[${slotIndex}].addressOrRoom`,
+      ),
+      householdName: readString(
+        slot.householdName ?? "",
+        `results.flagDutyPlan.slots[${slotIndex}].householdName`,
+      ),
+      householdId: readOptionalString(slot.householdId, `results.flagDutyPlan.slots[${slotIndex}].householdId`),
+      blockedEvents: readStringArray(
+        slot.blockedEvents ?? [],
+        `results.flagDutyPlan.slots[${slotIndex}].blockedEvents`,
+      ),
+      totalDutyCount: readNullableInteger(
+        slot.totalDutyCount ?? null,
+        `results.flagDutyPlan.slots[${slotIndex}].totalDutyCount`,
+        0,
+      ),
+    };
+  });
+
+  return {
+    slots,
+    warnings: readStringArray(value.warnings ?? [], "results.flagDutyPlan.warnings"),
+  };
+}
+
+function readPlannerSnapshotData(value: unknown): PlannerSnapshotData {
+  if (!isRecord(value)) {
+    throw new Error("JSON の data 形式が不正です。");
+  }
+
+  return {
+    input: readPlannerInputData(value.input),
+    results: {
+      groupPlan: readGroupPlan(value.results && isRecord(value.results) ? value.results.groupPlan : undefined),
+      flagDutyPlan: readFlagDutyPlan(
+        value.results && isRecord(value.results) ? value.results.flagDutyPlan : undefined,
+      ),
+    },
+  };
+}
+
+export function serializePlannerSnapshotToJson(data: PlannerSnapshotData): string {
   const payload: ExportEnvelope = {
-    schema: "shudan-toko-maker/input-data.v1",
+    schema: "shudan-toko-maker/snapshot.v2",
     exportedAt: new Date().toISOString(),
     data,
   };
@@ -293,11 +457,11 @@ export function serializePlannerInputToJson(data: PlannerInputData): string {
   return `${JSON.stringify(payload, null, 2)}\n`;
 }
 
-export function parsePlannerInputFromJson(jsonText: string): PlannerInputData {
+export function parsePlannerSnapshotFromJson(jsonText: string): PlannerSnapshotData {
   const normalizedText = jsonText.trim();
 
   if (!normalizedText) {
-    throw new Error("JSONが空です。テンプレートファイルを元に入力してください。");
+    throw new Error("JSONが空です。保存済みファイルを選択してください。");
   }
 
   let parsed: unknown;
@@ -305,14 +469,16 @@ export function parsePlannerInputFromJson(jsonText: string): PlannerInputData {
   try {
     parsed = JSON.parse(normalizedText);
   } catch {
-    throw new Error(
-      "JSON形式が不正です。テンプレート取得したファイルを編集して読み込んでください。",
-    );
+    throw new Error("JSON形式が不正です。保存したJSONファイルを選択してください。");
   }
 
-  if (isRecord(parsed) && isRecord(parsed.data)) {
-    return readPlannerInputData(parsed.data);
+  if (!isRecord(parsed)) {
+    throw new Error("JSON のルート形式が不正です。");
   }
 
-  return readPlannerInputData(parsed);
+  if (parsed.schema !== "shudan-toko-maker/snapshot.v2") {
+    throw new Error("このJSONは未対応の形式です。最新版で保存したJSONを利用してください。");
+  }
+
+  return readPlannerSnapshotData(parsed.data);
 }
