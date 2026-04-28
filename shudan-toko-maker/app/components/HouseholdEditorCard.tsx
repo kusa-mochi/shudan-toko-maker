@@ -53,7 +53,7 @@ export function HouseholdEditorCard({ household, householdIndex }: HouseholdEdit
             type="text"
             value={household.householdName}
             onChange={(event) => updateHouseholdText(household.id, "householdName", event.target.value)}
-            placeholder="例: 山田さん宅"
+            placeholder="例: 山田"
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-2.5 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
         </label>
