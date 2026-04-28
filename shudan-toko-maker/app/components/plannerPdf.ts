@@ -77,13 +77,13 @@ function drawTitle(doc: jsPDF, title: string, y: number): number {
   return y + 14;
 }
 
-const GRADE_CIRCLE_COLORS: Record<number, [number, number, number]> = {
-  1: [245, 158, 11],
-  2: [34, 211, 238],
-  3: [59, 130, 246],
-  4: [234, 179, 8],
-  5: [34, 197, 94],
-  6: [249, 115, 22],
+const GRADE_CIRCLE_COLORS: Record<number, { fill: [number, number, number]; text: [number, number, number] }> = {
+  1: { fill: [245, 158, 11],  text: [30, 30, 30] },
+  2: { fill: [34, 211, 238],  text: [30, 30, 30] },
+  3: { fill: [59, 130, 246],  text: [255, 255, 255] },
+  4: { fill: [234, 179, 8],   text: [30, 30, 30] },
+  5: { fill: [34, 197, 94],   text: [30, 30, 30] },
+  6: { fill: [249, 115, 22],  text: [255, 255, 255] },
 };
 
 const GROUP_COL_GAP = 4;
@@ -109,12 +109,21 @@ function drawGradeCircle(
   centerY: number,
   grade: Grade,
 ): void {
-  const color = GRADE_CIRCLE_COLORS[grade] ?? [150, 150, 150];
-  doc.setFillColor(color[0], color[1], color[2]);
+  const entry = GRADE_CIRCLE_COLORS[grade] ?? {
+    fill: [150, 150, 150] as [number, number, number],
+    text: [255, 255, 255] as [number, number, number],
+  };
+  doc.setFillColor(entry.fill[0], entry.fill[1], entry.fill[2]);
   doc.circle(centerX, centerY, GRADE_CIRCLE_R, "F");
-  doc.setFontSize(8);
-  doc.setTextColor(255, 255, 255);
+
+  // Use a bold latin font for the single-digit grade marker to improve legibility.
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.setTextColor(entry.text[0], entry.text[1], entry.text[2]);
   doc.text(`${grade}`, centerX, centerY + 1, { align: "center" });
+
+  // Restore the Japanese text font used by the rest of the document.
+  doc.setFont("NotoSansJP", "normal");
   doc.setTextColor(0);
 }
 
@@ -162,7 +171,7 @@ function drawGroupColumn(
       doc.text(member.name || "氏名未入力", colX + ROLE_AREA_W + 1, y + 6.5);
     } else {
       doc.setFontSize(9);
-      doc.text(member.name || "氏名未入力", colX + 4, y + 6.5);
+      doc.text(member.name || "氏名未入力", colX + ROLE_AREA_W + 1, y + 6.5);
     }
 
     drawGradeCircle(doc, colX + colWidth - 6.5, y + GROUP_CELL_H / 2, member.grade);
