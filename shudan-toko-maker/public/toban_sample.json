@@ -1,317 +1,944 @@
 {
-  "schema": "shudan-toko-maker/input-data.v1",
-  "exportedAt": "2026-04-19T07:54:05.521Z",
+  "schema": "shudan-toko-maker/snapshot.v2",
+  "exportedAt": "2026-04-28T13:30:03.363Z",
   "data": {
-    "households": [
-      {
-        "id": "household-1",
-        "householdName": "203号室 山田さん宅",
-        "memo": "新1年生あり。兄弟は同じ班を希望。",
-        "pastDutyCount": 1,
-        "children": [
-          {
-            "id": "child-1",
-            "name": "山田 さくら",
-            "grade": 6
-          },
-          {
-            "id": "child-2",
-            "name": "山田 ひなた",
-            "grade": 2
-          },
-          {
-            "id": "child-3",
-            "name": "山田 みのり",
-            "grade": 1
-          }
-        ]
-      },
-      {
-        "id": "household-2",
-        "householdName": "105号室 佐藤さん宅",
-        "memo": "朝の集合場所がやや遠い。",
-        "pastDutyCount": 0,
-        "children": [
-          {
-            "id": "child-4",
-            "name": "佐藤 はると",
-            "grade": 5
-          },
-          {
-            "id": "child-5",
-            "name": "佐藤 みお",
-            "grade": 3
-          }
-        ]
-      },
-      {
-        "id": "household-3",
-        "householdName": "12番地 鈴木さん宅",
-        "memo": "近所の子と同班希望。",
-        "pastDutyCount": 2,
-        "children": [
-          {
-            "id": "child-6",
-            "name": "鈴木 れん",
-            "grade": 6
-          },
-          {
-            "id": "child-7",
-            "name": "鈴木 あおい",
-            "grade": 1
-          }
-        ]
-      },
-      {
-        "id": "household-4",
-        "householdName": "301号室 高橋さん宅",
-        "memo": "高学年不在。低学年中心。",
-        "pastDutyCount": 0,
-        "children": [
-          {
-            "id": "child-8",
-            "name": "高橋 そうた",
-            "grade": 4
-          },
-          {
-            "id": "child-9",
-            "name": "高橋 ゆい",
-            "grade": 2
-          }
-        ]
-      },
-      {
-        "id": "household-5",
-        "householdName": "8番地 伊藤さん宅",
-        "memo": "修学旅行週は旗当番不可の想定。",
-        "pastDutyCount": 1,
-        "children": [
-          {
-            "id": "child-10",
-            "name": "伊藤 りく",
-            "grade": 6
-          },
-          {
-            "id": "child-11",
-            "name": "伊藤 すみれ",
-            "grade": 4
-          }
-        ]
-      },
-      {
-        "id": "household-6",
-        "householdName": "402号室 中村さん宅",
-        "memo": "西側ルートで登校。",
-        "pastDutyCount": 0,
-        "children": [
-          {
-            "id": "child-12",
-            "name": "中村 ゆうと",
-            "grade": 5
-          },
-          {
-            "id": "child-13",
-            "name": "中村 ここな",
-            "grade": 2
-          }
-        ]
-      },
-      {
-        "id": "household-7",
-        "householdName": "15番地 小林さん宅",
-        "memo": "低学年の付き添い確認用。",
-        "pastDutyCount": 3,
-        "children": [
-          {
-            "id": "child-14",
-            "name": "小林 けんた",
-            "grade": 4
-          },
-          {
-            "id": "child-15",
-            "name": "小林 ひかり",
-            "grade": 1
-          }
-        ]
-      },
-      {
-        "id": "household-8",
-        "householdName": "201号室 加藤さん宅",
-        "memo": "兄弟別班の検証候補。",
-        "pastDutyCount": 1,
-        "children": [
-          {
-            "id": "child-16",
-            "name": "加藤 りお",
-            "grade": 3
-          },
-          {
-            "id": "child-17",
-            "name": "加藤 なお",
-            "grade": 2
-          }
-        ]
-      },
-      {
-        "id": "household-9",
-        "householdName": "7番地 吉田さん宅",
-        "memo": "",
-        "pastDutyCount": 2,
-        "children": [
-          {
-            "id": "child-18",
-            "name": "吉田 はな",
-            "grade": 6
-          }
-        ]
-      },
-      {
-        "id": "household-10",
-        "householdName": "504号室 松本さん宅",
-        "memo": "",
-        "pastDutyCount": 0,
-        "children": [
-          {
-            "id": "child-19",
-            "name": "松本 そうすけ",
-            "grade": 3
-          }
-        ]
-      },
-      {
-        "id": "household-11",
-        "householdName": "22番地 井上さん宅",
-        "memo": "",
-        "pastDutyCount": 1,
-        "children": [
-          {
-            "id": "child-20",
-            "name": "井上 みく",
-            "grade": 5
-          }
-        ]
-      },
-      {
-        "id": "household-12",
-        "householdName": "101号室 木村さん宅",
-        "memo": "",
-        "pastDutyCount": 0,
-        "children": [
-          {
-            "id": "child-21",
-            "name": "木村 たろう",
-            "grade": 5
-          },
-          {
-            "id": "child-22",
-            "name": "木村 じろう",
-            "grade": 4
-          },
-          {
-            "id": "child-23",
-            "name": "木村 さぶろう",
-            "grade": 1
-          }
-        ]
-      }
-    ],
-    "pairRules": [
-      {
-        "id": "pair-rule-1",
-        "type": "together",
-        "childAId": "child-3",
-        "childBId": "child-15",
-        "note": "新1年生同士なので同じ班にしたい"
-      },
-      {
-        "id": "pair-rule-2",
-        "type": "separate",
-        "childAId": "child-5",
-        "childBId": "child-16",
-        "note": "個別事情により別班にしたい"
-      },
-      {
-        "id": "pair-rule-3",
-        "type": "together",
-        "childAId": "child-1",
-        "childBId": "child-2",
-        "note": "兄弟は同じ班希望"
-      }
-    ],
-    "groupRules": [
-      {
-        "id": "group-rule-1",
-        "type": "groupSize",
-        "minSize": 4,
-        "maxSize": 5,
-        "strategy": "most-senior",
-        "note": "1班あたり4〜5人"
-      },
-      {
-        "id": "group-rule-2",
-        "type": "leaderPosition",
-        "minSize": 4,
-        "maxSize": 5,
-        "strategy": "most-senior",
-        "note": "先頭は最年長"
-      },
-      {
-        "id": "group-rule-3",
-        "type": "rearPosition",
-        "minSize": 4,
-        "maxSize": 5,
-        "strategy": "most-senior",
-        "note": "最後尾は次に年長"
-      }
-    ],
-    "rulePriorityOrder": [
-      "group:group-rule-1",
-      "group:group-rule-2",
-      "group:group-rule-3",
-      "pair:pair-rule-1",
-      "pair:pair-rule-2",
-      "pair:pair-rule-3"
-    ],
-    "schoolEvents": [
-      {
-        "id": "school-event-1",
-        "title": "6年生 修学旅行",
-        "date": "2026-05-19",
-        "targetGrades": [
-          6
-        ]
-      },
-      {
-        "id": "school-event-2",
-        "title": "3年生 社会科見学",
-        "date": "2026-05-26",
-        "targetGrades": [
-          3
-        ]
-      },
-      {
-        "id": "school-event-3",
-        "title": "1・2年生 遠足",
-        "date": "2026-06-02",
-        "targetGrades": [
-          1,
-          2
-        ]
-      }
-    ],
-    "flagDutySettings": {
-      "startDate": "2026-05-12",
-      "endDate": "2027-04-20",
-      "dutyLimits": [
+    "input": {
+      "households": [
         {
-          "householdId": "household-2",
-          "maxCount": 3
+          "id": "household-1",
+          "addressOrRoom": "203号室",
+          "householdName": "山田",
+          "memo": "新1年生あり。兄弟は同じ班を希望。",
+          "pastDutyCount": 1,
+          "children": [
+            {
+              "id": "child-1",
+              "name": "山田 さくら",
+              "grade": 6
+            },
+            {
+              "id": "child-2",
+              "name": "山田 ひなた",
+              "grade": 2
+            },
+            {
+              "id": "child-3",
+              "name": "山田 みのり",
+              "grade": 1
+            }
+          ]
         },
         {
-          "householdId": "household-10",
-          "maxCount": 3
+          "id": "household-2",
+          "addressOrRoom": "105号室",
+          "householdName": "佐藤",
+          "memo": "朝の集合場所がやや遠い。",
+          "pastDutyCount": 0,
+          "children": [
+            {
+              "id": "child-4",
+              "name": "佐藤 はると",
+              "grade": 5
+            },
+            {
+              "id": "child-5",
+              "name": "佐藤 みお",
+              "grade": 3
+            }
+          ]
+        },
+        {
+          "id": "household-3",
+          "addressOrRoom": "12番地",
+          "householdName": "鈴木",
+          "memo": "近所の子と同班希望。",
+          "pastDutyCount": 2,
+          "children": [
+            {
+              "id": "child-6",
+              "name": "鈴木 れん",
+              "grade": 6
+            },
+            {
+              "id": "child-7",
+              "name": "鈴木 あおい",
+              "grade": 1
+            }
+          ]
+        },
+        {
+          "id": "household-4",
+          "addressOrRoom": "301号室",
+          "householdName": "高橋",
+          "memo": "高学年不在。低学年中心。",
+          "pastDutyCount": 0,
+          "children": [
+            {
+              "id": "child-8",
+              "name": "高橋 そうた",
+              "grade": 4
+            },
+            {
+              "id": "child-9",
+              "name": "高橋 ゆい",
+              "grade": 2
+            }
+          ]
+        },
+        {
+          "id": "household-5",
+          "addressOrRoom": "8番地",
+          "householdName": "伊藤",
+          "memo": "修学旅行週は旗当番不可の想定。",
+          "pastDutyCount": 1,
+          "children": [
+            {
+              "id": "child-10",
+              "name": "伊藤 りく",
+              "grade": 6
+            },
+            {
+              "id": "child-11",
+              "name": "伊藤 すみれ",
+              "grade": 4
+            }
+          ]
+        },
+        {
+          "id": "household-6",
+          "addressOrRoom": "402号室",
+          "householdName": "中村",
+          "memo": "西側ルートで登校。",
+          "pastDutyCount": 0,
+          "children": [
+            {
+              "id": "child-12",
+              "name": "中村 ゆうと",
+              "grade": 5
+            },
+            {
+              "id": "child-13",
+              "name": "中村 ここな",
+              "grade": 2
+            }
+          ]
+        },
+        {
+          "id": "household-8",
+          "addressOrRoom": "201号室",
+          "householdName": "加藤",
+          "memo": "兄弟別班の検証候補。",
+          "pastDutyCount": 1,
+          "children": [
+            {
+              "id": "child-16",
+              "name": "加藤 りお",
+              "grade": 3
+            },
+            {
+              "id": "child-17",
+              "name": "加藤 なお",
+              "grade": 2
+            }
+          ]
+        },
+        {
+          "id": "household-9",
+          "addressOrRoom": "7番地",
+          "householdName": "吉田",
+          "memo": "",
+          "pastDutyCount": 2,
+          "children": [
+            {
+              "id": "child-18",
+              "name": "吉田 はな",
+              "grade": 6
+            }
+          ]
+        },
+        {
+          "id": "household-10",
+          "addressOrRoom": "504号室",
+          "householdName": "松本",
+          "memo": "",
+          "pastDutyCount": 0,
+          "children": [
+            {
+              "id": "child-19",
+              "name": "松本 そうすけ",
+              "grade": 3
+            }
+          ]
+        },
+        {
+          "id": "household-12",
+          "addressOrRoom": "101号室",
+          "householdName": "木村",
+          "memo": "",
+          "pastDutyCount": 0,
+          "children": [
+            {
+              "id": "child-21",
+              "name": "木村 たろう",
+              "grade": 5
+            },
+            {
+              "id": "child-22",
+              "name": "木村 じろう",
+              "grade": 4
+            },
+            {
+              "id": "child-23",
+              "name": "木村 さぶろう",
+              "grade": 1
+            }
+          ]
         }
-      ]
+      ],
+      "pairRules": [
+        {
+          "id": "pair-rule-2",
+          "type": "separate",
+          "childAId": "child-5",
+          "childBId": "child-16",
+          "note": "個別事情により別班にしたい"
+        },
+        {
+          "id": "pair-rule-3",
+          "type": "together",
+          "childAId": "child-1",
+          "childBId": "child-2",
+          "note": "兄弟は同じ班希望"
+        }
+      ],
+      "groupRules": [
+        {
+          "id": "group-rule-1",
+          "type": "groupSize",
+          "minSize": 4,
+          "maxSize": 5,
+          "strategy": "most-senior",
+          "note": "1班あたり4〜5人"
+        },
+        {
+          "id": "group-rule-2",
+          "type": "leaderPosition",
+          "minSize": 4,
+          "maxSize": 5,
+          "strategy": "most-senior",
+          "note": "先頭は最年長"
+        },
+        {
+          "id": "group-rule-3",
+          "type": "rearPosition",
+          "minSize": 4,
+          "maxSize": 5,
+          "strategy": "most-senior",
+          "note": "最後尾は次に年長"
+        }
+      ],
+      "rulePriorityOrder": [
+        "group:group-rule-1",
+        "group:group-rule-2",
+        "group:group-rule-3",
+        "pair:pair-rule-2",
+        "pair:pair-rule-3"
+      ],
+      "schoolEvents": [
+        {
+          "id": "school-event-1",
+          "title": "6年生 修学旅行",
+          "date": "2026-05-19",
+          "targetGrades": [
+            6
+          ]
+        },
+        {
+          "id": "school-event-2",
+          "title": "3年生 社会科見学",
+          "date": "2026-05-26",
+          "targetGrades": [
+            3
+          ]
+        },
+        {
+          "id": "school-event-3",
+          "title": "1・2年生 遠足",
+          "date": "2026-06-02",
+          "targetGrades": [
+            1,
+            2
+          ]
+        }
+      ],
+      "flagDutySettings": {
+        "startDate": "2026-05-12",
+        "endDate": "2027-04-20",
+        "dutyLimits": [
+          {
+            "householdId": "household-2",
+            "maxCount": 3
+          },
+          {
+            "householdId": "household-10",
+            "maxCount": 3
+          }
+        ]
+      }
+    },
+    "results": {
+      "groupPlan": {
+        "groups": [
+          {
+            "name": "第1班",
+            "targetSize": 5,
+            "members": [
+              {
+                "id": "child-6",
+                "name": "鈴木 れん",
+                "grade": 6,
+                "householdId": "household-3",
+                "addressOrRoom": "12番地",
+                "householdName": "鈴木"
+              },
+              {
+                "id": "child-13",
+                "name": "中村 ここな",
+                "grade": 2,
+                "householdId": "household-6",
+                "addressOrRoom": "402号室",
+                "householdName": "中村"
+              },
+              {
+                "id": "child-23",
+                "name": "木村 さぶろう",
+                "grade": 1,
+                "householdId": "household-12",
+                "addressOrRoom": "101号室",
+                "householdName": "木村"
+              },
+              {
+                "id": "child-7",
+                "name": "鈴木 あおい",
+                "grade": 1,
+                "householdId": "household-3",
+                "addressOrRoom": "12番地",
+                "householdName": "鈴木"
+              },
+              {
+                "id": "child-21",
+                "name": "木村 たろう",
+                "grade": 5,
+                "householdId": "household-12",
+                "addressOrRoom": "101号室",
+                "householdName": "木村"
+              }
+            ],
+            "leaderId": "child-6",
+            "rearId": "child-21"
+          },
+          {
+            "name": "第2班",
+            "targetSize": 5,
+            "members": [
+              {
+                "id": "child-1",
+                "name": "山田 さくら",
+                "grade": 6,
+                "householdId": "household-1",
+                "addressOrRoom": "203号室",
+                "householdName": "山田"
+              },
+              {
+                "id": "child-8",
+                "name": "高橋 そうた",
+                "grade": 4,
+                "householdId": "household-4",
+                "addressOrRoom": "301号室",
+                "householdName": "高橋"
+              },
+              {
+                "id": "child-2",
+                "name": "山田 ひなた",
+                "grade": 2,
+                "householdId": "household-1",
+                "addressOrRoom": "203号室",
+                "householdName": "山田"
+              },
+              {
+                "id": "child-9",
+                "name": "高橋 ゆい",
+                "grade": 2,
+                "householdId": "household-4",
+                "addressOrRoom": "301号室",
+                "householdName": "高橋"
+              },
+              {
+                "id": "child-4",
+                "name": "佐藤 はると",
+                "grade": 5,
+                "householdId": "household-2",
+                "addressOrRoom": "105号室",
+                "householdName": "佐藤"
+              }
+            ],
+            "leaderId": "child-1",
+            "rearId": "child-4"
+          },
+          {
+            "name": "第3班",
+            "targetSize": 5,
+            "members": [
+              {
+                "id": "child-18",
+                "name": "吉田 はな",
+                "grade": 6,
+                "householdId": "household-9",
+                "addressOrRoom": "7番地",
+                "householdName": "吉田"
+              },
+              {
+                "id": "child-16",
+                "name": "加藤 りお",
+                "grade": 3,
+                "householdId": "household-8",
+                "addressOrRoom": "201号室",
+                "householdName": "加藤"
+              },
+              {
+                "id": "child-19",
+                "name": "松本 そうすけ",
+                "grade": 3,
+                "householdId": "household-10",
+                "addressOrRoom": "504号室",
+                "householdName": "松本"
+              },
+              {
+                "id": "child-17",
+                "name": "加藤 なお",
+                "grade": 2,
+                "householdId": "household-8",
+                "addressOrRoom": "201号室",
+                "householdName": "加藤"
+              },
+              {
+                "id": "child-12",
+                "name": "中村 ゆうと",
+                "grade": 5,
+                "householdId": "household-6",
+                "addressOrRoom": "402号室",
+                "householdName": "中村"
+              }
+            ],
+            "leaderId": "child-18",
+            "rearId": "child-12"
+          },
+          {
+            "name": "第4班",
+            "targetSize": 5,
+            "members": [
+              {
+                "id": "child-10",
+                "name": "伊藤 りく",
+                "grade": 6,
+                "householdId": "household-5",
+                "addressOrRoom": "8番地",
+                "householdName": "伊藤"
+              },
+              {
+                "id": "child-11",
+                "name": "伊藤 すみれ",
+                "grade": 4,
+                "householdId": "household-5",
+                "addressOrRoom": "8番地",
+                "householdName": "伊藤"
+              },
+              {
+                "id": "child-5",
+                "name": "佐藤 みお",
+                "grade": 3,
+                "householdId": "household-2",
+                "addressOrRoom": "105号室",
+                "householdName": "佐藤"
+              },
+              {
+                "id": "child-3",
+                "name": "山田 みのり",
+                "grade": 1,
+                "householdId": "household-1",
+                "addressOrRoom": "203号室",
+                "householdName": "山田"
+              },
+              {
+                "id": "child-22",
+                "name": "木村 じろう",
+                "grade": 4,
+                "householdId": "household-12",
+                "addressOrRoom": "101号室",
+                "householdName": "木村"
+              }
+            ],
+            "leaderId": "child-10",
+            "rearId": "child-22"
+          }
+        ],
+        "warnings": []
+      },
+      "flagDutyPlan": {
+        "slots": [
+          {
+            "id": "slot-1",
+            "dateLabel": "5/12(火)",
+            "addressOrRoom": "301号室",
+            "householdName": "高橋",
+            "householdId": "household-4",
+            "blockedEvents": [],
+            "totalDutyCount": 1
+          },
+          {
+            "id": "slot-2",
+            "dateLabel": "5/19(火)",
+            "addressOrRoom": "105号室",
+            "householdName": "佐藤",
+            "householdId": "household-2",
+            "blockedEvents": [],
+            "totalDutyCount": 1
+          },
+          {
+            "id": "slot-3",
+            "dateLabel": "5/26(火)",
+            "addressOrRoom": "402号室",
+            "householdName": "中村",
+            "householdId": "household-6",
+            "blockedEvents": [],
+            "totalDutyCount": 1
+          },
+          {
+            "id": "slot-4",
+            "dateLabel": "6/2(火)",
+            "addressOrRoom": "504号室",
+            "householdName": "松本",
+            "householdId": "household-10",
+            "blockedEvents": [],
+            "totalDutyCount": 1
+          },
+          {
+            "id": "slot-5",
+            "dateLabel": "6/9(火)",
+            "addressOrRoom": "101号室",
+            "householdName": "木村",
+            "householdId": "household-12",
+            "blockedEvents": [],
+            "totalDutyCount": 1
+          },
+          {
+            "id": "slot-6",
+            "dateLabel": "6/16(火)",
+            "addressOrRoom": "8番地",
+            "householdName": "伊藤",
+            "householdId": "household-5",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-7",
+            "dateLabel": "6/23(火)",
+            "addressOrRoom": "201号室",
+            "householdName": "加藤",
+            "householdId": "household-8",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-8",
+            "dateLabel": "6/30(火)",
+            "addressOrRoom": "301号室",
+            "householdName": "高橋",
+            "householdId": "household-4",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-9",
+            "dateLabel": "7/7(火)",
+            "addressOrRoom": "105号室",
+            "householdName": "佐藤",
+            "householdId": "household-2",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-10",
+            "dateLabel": "7/14(火)",
+            "addressOrRoom": "203号室",
+            "householdName": "山田",
+            "householdId": "household-1",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-11",
+            "dateLabel": "7/21(火)",
+            "addressOrRoom": "504号室",
+            "householdName": "松本",
+            "householdId": "household-10",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-12",
+            "dateLabel": "7/28(火)",
+            "addressOrRoom": "402号室",
+            "householdName": "中村",
+            "householdId": "household-6",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-13",
+            "dateLabel": "8/4(火)",
+            "addressOrRoom": "101号室",
+            "householdName": "木村",
+            "householdId": "household-12",
+            "blockedEvents": [],
+            "totalDutyCount": 2
+          },
+          {
+            "id": "slot-14",
+            "dateLabel": "8/11(火)",
+            "addressOrRoom": "8番地",
+            "householdName": "伊藤",
+            "householdId": "household-5",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-15",
+            "dateLabel": "8/18(火)",
+            "addressOrRoom": "201号室",
+            "householdName": "加藤",
+            "householdId": "household-8",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-16",
+            "dateLabel": "8/25(火)",
+            "addressOrRoom": "7番地",
+            "householdName": "吉田",
+            "householdId": "household-9",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-17",
+            "dateLabel": "9/1(火)",
+            "addressOrRoom": "301号室",
+            "householdName": "高橋",
+            "householdId": "household-4",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-18",
+            "dateLabel": "9/8(火)",
+            "addressOrRoom": "105号室",
+            "householdName": "佐藤",
+            "householdId": "household-2",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-19",
+            "dateLabel": "9/15(火)",
+            "addressOrRoom": "203号室",
+            "householdName": "山田",
+            "householdId": "household-1",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-20",
+            "dateLabel": "9/22(火)",
+            "addressOrRoom": "504号室",
+            "householdName": "松本",
+            "householdId": "household-10",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-21",
+            "dateLabel": "9/29(火)",
+            "addressOrRoom": "402号室",
+            "householdName": "中村",
+            "householdId": "household-6",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-22",
+            "dateLabel": "10/6(火)",
+            "addressOrRoom": "101号室",
+            "householdName": "木村",
+            "householdId": "household-12",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-23",
+            "dateLabel": "10/13(火)",
+            "addressOrRoom": "12番地",
+            "householdName": "鈴木",
+            "householdId": "household-3",
+            "blockedEvents": [],
+            "totalDutyCount": 3
+          },
+          {
+            "id": "slot-24",
+            "dateLabel": "10/20(火)",
+            "addressOrRoom": "8番地",
+            "householdName": "伊藤",
+            "householdId": "household-5",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-25",
+            "dateLabel": "10/27(火)",
+            "addressOrRoom": "201号室",
+            "householdName": "加藤",
+            "householdId": "household-8",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-26",
+            "dateLabel": "11/3(火)",
+            "addressOrRoom": "7番地",
+            "householdName": "吉田",
+            "householdId": "household-9",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-27",
+            "dateLabel": "11/10(火)",
+            "addressOrRoom": "301号室",
+            "householdName": "高橋",
+            "householdId": "household-4",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-28",
+            "dateLabel": "11/17(火)",
+            "addressOrRoom": "203号室",
+            "householdName": "山田",
+            "householdId": "household-1",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-29",
+            "dateLabel": "11/24(火)",
+            "addressOrRoom": "402号室",
+            "householdName": "中村",
+            "householdId": "household-6",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-30",
+            "dateLabel": "12/1(火)",
+            "addressOrRoom": "101号室",
+            "householdName": "木村",
+            "householdId": "household-12",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-31",
+            "dateLabel": "12/8(火)",
+            "addressOrRoom": "12番地",
+            "householdName": "鈴木",
+            "householdId": "household-3",
+            "blockedEvents": [],
+            "totalDutyCount": 4
+          },
+          {
+            "id": "slot-32",
+            "dateLabel": "12/15(火)",
+            "addressOrRoom": "8番地",
+            "householdName": "伊藤",
+            "householdId": "household-5",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-33",
+            "dateLabel": "12/22(火)",
+            "addressOrRoom": "201号室",
+            "householdName": "加藤",
+            "householdId": "household-8",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-34",
+            "dateLabel": "12/29(火)",
+            "addressOrRoom": "7番地",
+            "householdName": "吉田",
+            "householdId": "household-9",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-35",
+            "dateLabel": "1/5(火)",
+            "addressOrRoom": "301号室",
+            "householdName": "高橋",
+            "householdId": "household-4",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-36",
+            "dateLabel": "1/12(火)",
+            "addressOrRoom": "203号室",
+            "householdName": "山田",
+            "householdId": "household-1",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-37",
+            "dateLabel": "1/19(火)",
+            "addressOrRoom": "402号室",
+            "householdName": "中村",
+            "householdId": "household-6",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-38",
+            "dateLabel": "1/26(火)",
+            "addressOrRoom": "101号室",
+            "householdName": "木村",
+            "householdId": "household-12",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-39",
+            "dateLabel": "2/2(火)",
+            "addressOrRoom": "12番地",
+            "householdName": "鈴木",
+            "householdId": "household-3",
+            "blockedEvents": [],
+            "totalDutyCount": 5
+          },
+          {
+            "id": "slot-40",
+            "dateLabel": "2/9(火)",
+            "addressOrRoom": "8番地",
+            "householdName": "伊藤",
+            "householdId": "household-5",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-41",
+            "dateLabel": "2/16(火)",
+            "addressOrRoom": "201号室",
+            "householdName": "加藤",
+            "householdId": "household-8",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-42",
+            "dateLabel": "2/23(火)",
+            "addressOrRoom": "7番地",
+            "householdName": "吉田",
+            "householdId": "household-9",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-43",
+            "dateLabel": "3/2(火)",
+            "addressOrRoom": "301号室",
+            "householdName": "高橋",
+            "householdId": "household-4",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-44",
+            "dateLabel": "3/9(火)",
+            "addressOrRoom": "203号室",
+            "householdName": "山田",
+            "householdId": "household-1",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-45",
+            "dateLabel": "3/16(火)",
+            "addressOrRoom": "402号室",
+            "householdName": "中村",
+            "householdId": "household-6",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-46",
+            "dateLabel": "3/23(火)",
+            "addressOrRoom": "101号室",
+            "householdName": "木村",
+            "householdId": "household-12",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-47",
+            "dateLabel": "3/30(火)",
+            "addressOrRoom": "12番地",
+            "householdName": "鈴木",
+            "householdId": "household-3",
+            "blockedEvents": [],
+            "totalDutyCount": 6
+          },
+          {
+            "id": "slot-48",
+            "dateLabel": "4/6(火)",
+            "addressOrRoom": "8番地",
+            "householdName": "伊藤",
+            "householdId": "household-5",
+            "blockedEvents": [],
+            "totalDutyCount": 7
+          },
+          {
+            "id": "slot-49",
+            "dateLabel": "4/13(火)",
+            "addressOrRoom": "201号室",
+            "householdName": "加藤",
+            "householdId": "household-8",
+            "blockedEvents": [],
+            "totalDutyCount": 7
+          },
+          {
+            "id": "slot-50",
+            "dateLabel": "4/20(火)",
+            "addressOrRoom": "7番地",
+            "householdName": "吉田",
+            "householdId": "household-9",
+            "blockedEvents": [],
+            "totalDutyCount": 7
+          }
+        ],
+        "warnings": []
+      }
     }
   }
 }

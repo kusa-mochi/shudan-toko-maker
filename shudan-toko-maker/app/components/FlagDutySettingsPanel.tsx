@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { usePlannerContext } from "./PlannerContext";
+import { formatHouseholdLabel } from "./plannerUtils";
 
 export function FlagDutySettingsPanel() {
   const {
@@ -67,7 +68,7 @@ export function FlagDutySettingsPanel() {
           <ul className="mt-3 space-y-2">
             {flagDutySettings.dutyLimits.map((limit) => {
               const household = households.find((h) => h.id === limit.householdId);
-              const label = household?.householdName || "不明なご家庭";
+              const label = household ? formatHouseholdLabel(household) : "不明なご家庭";
 
               return (
                 <li
@@ -117,7 +118,7 @@ export function FlagDutySettingsPanel() {
               <option value="">— 選択してください —</option>
               {availableHouseholds.map((household) => (
                 <option key={household.id} value={household.id}>
-                  {household.householdName || "未入力のご家庭"}
+                  {formatHouseholdLabel(household)}
                 </option>
               ))}
             </select>

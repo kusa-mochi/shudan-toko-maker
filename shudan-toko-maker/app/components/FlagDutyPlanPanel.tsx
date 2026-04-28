@@ -54,7 +54,10 @@ export function FlagDutyPlanPanel() {
                     {slot.dateLabel}
                   </td>
                   <td className="border-b border-stone-100 px-3 py-2 font-semibold text-stone-900">
-                    {slot.householdName}
+                    {slot.householdName || "未入力のご家庭"}
+                    {slot.addressOrRoom ? (
+                      <span className="ml-2 text-xs font-medium text-stone-500">({slot.addressOrRoom})</span>
+                    ) : null}
                   </td>
                   <td className="border-b border-stone-100 px-3 py-2 text-stone-700">
                     {slot.blockedEvents.length > 0 ? slot.blockedEvents.join("、") : <span className="text-stone-400">-</span>}

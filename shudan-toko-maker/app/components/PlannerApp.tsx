@@ -6,6 +6,7 @@ import { FlagDutyPlanPanel } from "./FlagDutyPlanPanel";
 import { GroupPlanPanel } from "./GroupPlanPanel";
 import { HouseholdFormSection } from "./HouseholdFormSection";
 import { InputSupportAccordion } from "./InputSupportAccordion";
+import { PdfExportCard } from "./PdfExportCard";
 import { PlannerHero } from "./PlannerHero";
 
 function PlannerContent() {
@@ -30,9 +31,12 @@ function PlannerContent() {
         )}
 
         {activeTab === "results" && (
-          <section className="grid gap-6 xl:grid-cols-2">
-            <GroupPlanPanel />
-            <FlagDutyPlanPanel />
+          <section className="space-y-6">
+            <PdfExportCard />
+            <div className="grid gap-6 xl:grid-cols-2">
+              <GroupPlanPanel />
+              <FlagDutyPlanPanel />
+            </div>
           </section>
         )}
       </div>

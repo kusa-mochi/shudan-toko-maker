@@ -9,6 +9,7 @@ export type Child = {
 
 export type Household = {
   id: string;
+  addressOrRoom: string;
   householdName: string;
   memo: string;
   pastDutyCount: number;
@@ -58,6 +59,7 @@ export type ChildRecord = {
   name: string;
   grade: Grade;
   householdId: string;
+  addressOrRoom: string;
   householdName: string;
 };
 
@@ -77,6 +79,7 @@ export type GroupPlan = {
 export type FlagDutySlot = {
   id: string;
   dateLabel: string;
+  addressOrRoom: string;
   householdName: string;
   householdId?: string;
   blockedEvents: string[];

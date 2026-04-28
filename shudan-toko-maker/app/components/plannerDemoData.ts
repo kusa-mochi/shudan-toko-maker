@@ -27,6 +27,7 @@ export function createDemoPlannerState(): DemoPlannerState {
     households: [
       {
         id: "household-1",
+        addressOrRoom: "",
         householdName: "",
         memo: "",
         pastDutyCount: 0,

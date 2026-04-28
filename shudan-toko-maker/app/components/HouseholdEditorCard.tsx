@@ -36,13 +36,24 @@ export function HouseholdEditorCard({ household, householdIndex }: HouseholdEdit
       </div>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-3">
-        <label className="space-y-2 text-sm font-medium text-stone-700 lg:col-span-2">
-          家庭名・保護者名
+        <label className="space-y-2 text-sm font-medium text-stone-700">
+          番地/部屋番号
+          <input
+            type="text"
+            value={household.addressOrRoom}
+            onChange={(event) => updateHouseholdText(household.id, "addressOrRoom", event.target.value)}
+            placeholder="例: 203号室 / 12番地"
+            className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-2.5 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
+          />
+        </label>
+
+        <label className="space-y-2 text-sm font-medium text-stone-700 lg:col-span-1">
+          ご家庭名
           <input
             type="text"
             value={household.householdName}
             onChange={(event) => updateHouseholdText(household.id, "householdName", event.target.value)}
-            placeholder="例: 山田 太郎 さん宅"
+            placeholder="例: 山田"
             className="w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-2.5 text-base text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
           />
         </label>

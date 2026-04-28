@@ -20,10 +20,11 @@ import {
   generateFlagDutySchedule,
   generateSchoolGroups,
   getAllChildRecords,
+  formatHouseholdLabel,
 } from "./plannerUtils";
 import {
-  parsePlannerInputFromJson,
-  serializePlannerInputToJson,
+  parsePlannerSnapshotFromJson,
+  serializePlannerSnapshotToJson,
 } from "./plannerJson";
 import type {
   FlagDutyPlan,
@@ -134,7 +135,7 @@ type PlannerContextValue = {
   removeHousehold: (householdId: string) => void;
   updateHouseholdText: (
     householdId: string,
-    field: "householdName" | "memo",
+    field: "addressOrRoom" | "householdName" | "memo",
     value: string,
   ) => void;
   updateHouseholdDutyCount: (householdId: string, value: string) => void;
@@ -236,7 +237,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     .sort(compareChildrenBySeniority)
     .map((child) => ({
       id: child.id,
-      label: `${child.householdName || "未入力のご家庭"} / ${displayChildName(child)}`,
+      label: `${formatHouseholdLabel(child)} / ${displayChildName(child)}`,
     }));
 
   const childOptionMap = new Map(childOptions.map((child) => [child.id, child.label]));
@@ -327,7 +328,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
 
   const updateHouseholdText = (
     householdId: string,
-    field: "householdName" | "memo",
+    field: "addressOrRoom" | "householdName" | "memo",
     value: string,
   ) => {
     setHouseholds((current) =>
@@ -596,13 +597,19 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   };
 
   const exportInputToJson = () => {
-    const jsonText = serializePlannerInputToJson({
-      households,
-      pairRules,
-      groupRules,
-      rulePriorityOrder,
-      schoolEvents,
-      flagDutySettings,
+    const jsonText = serializePlannerSnapshotToJson({
+      input: {
+        households,
+        pairRules,
+        groupRules,
+        rulePriorityOrder,
+        schoolEvents,
+        flagDutySettings,
+      },
+      results: {
+        groupPlan,
+        flagDutyPlan,
+      },
     });
 
     const blob = new Blob([jsonText], { type: "application/json;charset=utf-8" });
@@ -611,7 +618,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     const timestamp = new Date().toISOString().replace(/[:]/g, "-").replace(/\..+$/, "");
 
     link.href = downloadUrl;
-    link.download = `shudan-toko-input-${timestamp}.json`;
+    link.download = `shudan-toko-data-${timestamp}.json`;
     document.body.append(link);
     link.click();
     link.remove();
@@ -620,49 +627,52 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
 
   const importInputFromJson = (jsonText: string): JsonImportResult => {
     try {
-      const imported = parsePlannerInputFromJson(jsonText);
+      const imported = parsePlannerSnapshotFromJson(jsonText);
+      const importedInput = imported.input;
       const nextRulePriorityOrder =
-        imported.rulePriorityOrder.length > 0
-          ? imported.rulePriorityOrder
+        importedInput.rulePriorityOrder.length > 0
+          ? importedInput.rulePriorityOrder
           : [
-              ...imported.groupRules.map((rule) => toRuleKey("group", rule.id)),
-              ...imported.pairRules.map((rule) => toRuleKey("pair", rule.id)),
+              ...importedInput.groupRules.map((rule) => toRuleKey("group", rule.id)),
+              ...importedInput.pairRules.map((rule) => toRuleKey("pair", rule.id)),
             ];
 
-      setHouseholds(imported.households);
-      setPairRules(imported.pairRules);
-      setGroupRules(imported.groupRules);
+      setHouseholds(importedInput.households);
+      setPairRules(importedInput.pairRules);
+      setGroupRules(importedInput.groupRules);
       setRulePriorityOrder(nextRulePriorityOrder);
-      setSchoolEvents(imported.schoolEvents);
-      setFlagDutySettings(imported.flagDutySettings);
-      setIsPlanStale(true);
+      setSchoolEvents(importedInput.schoolEvents);
+      setFlagDutySettings(importedInput.flagDutySettings);
+      setGroupPlan(imported.results.groupPlan);
+      setFlagDutyPlan(imported.results.flagDutyPlan);
+      setIsPlanStale(false);
       setActiveTab("input");
       setLastSavedAt("");
 
       householdIdRef.current = getNextIdNumberFromValues(
-        imported.households.map((household) => household.id),
+        importedInput.households.map((household) => household.id),
         householdIdRef.current,
       );
       childIdRef.current = getNextIdNumberFromValues(
-        imported.households.flatMap((household) => household.children.map((child) => child.id)),
+        importedInput.households.flatMap((household) => household.children.map((child) => child.id)),
         childIdRef.current,
       );
       pairRuleIdRef.current = getNextIdNumberFromValues(
-        imported.pairRules.map((rule) => rule.id),
+        importedInput.pairRules.map((rule) => rule.id),
         pairRuleIdRef.current,
       );
       groupRuleIdRef.current = getNextIdNumberFromValues(
-        imported.groupRules.map((rule) => rule.id),
+        importedInput.groupRules.map((rule) => rule.id),
         groupRuleIdRef.current,
       );
       schoolEventIdRef.current = getNextIdNumberFromValues(
-        imported.schoolEvents.map((eventItem) => eventItem.id),
+        importedInput.schoolEvents.map((eventItem) => eventItem.id),
         schoolEventIdRef.current,
       );
 
       return {
         success: true,
-        message: "JSONを読み込みました。入力内容を反映しています。",
+        message: "JSONを読み込みました。データ入力と生成結果を反映しています。",
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "JSON読込に失敗しました。";

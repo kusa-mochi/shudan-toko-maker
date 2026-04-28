@@ -46,7 +46,7 @@ export function DataFileToolbar() {
     <div className="rounded-[28px] border border-stone-200/90 bg-white/75 p-4 backdrop-blur sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-stone-600">
-          入力データの保存・読込ができます。「サンプルファイルをダウンロード」で入力例を確認できます。
+          データ入力と生成結果をまとめて保存・読込できます。「サンプルファイルをダウンロード」で入力例を確認できます。
         </p>
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <button
