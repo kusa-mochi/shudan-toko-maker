@@ -331,15 +331,23 @@ export async function exportGroupPlanToPdf(groupPlan: GroupPlan): Promise<void> 
 
   doc.setFontSize(10);
 
+  const promiseBulletX = MARGIN_LEFT + 4;
+  const promiseTextX = promiseBulletX + 4;
+  const promiseLineHeight = 5.5;
+  const promiseTextWidth = MARGIN_LEFT + USABLE_WIDTH - promiseTextX;
+
   for (const item of promiseItems) {
-    if (y + 8 > MAX_Y) {
+    const lines = doc.splitTextToSize(item, promiseTextWidth);
+    const blockHeight = Math.max(promiseLineHeight, lines.length * promiseLineHeight) + 2;
+
+    if (y + blockHeight > MAX_Y) {
       doc.addPage();
       y = MARGIN_TOP;
     }
 
-    const lines = doc.splitTextToSize(`● ${item}`, USABLE_WIDTH - 8);
-    doc.text(lines, MARGIN_LEFT + 4, y);
-    y += lines.length * 5.5 + 2;
+    doc.text("●", promiseBulletX, y);
+    doc.text(lines, promiseTextX, y);
+    y += blockHeight;
   }
 
   y += 4;
