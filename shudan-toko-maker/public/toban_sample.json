@@ -123,25 +123,6 @@
         ]
       },
       {
-        "id": "household-7",
-        "addressOrRoom": "15番地",
-        "householdName": "小林",
-        "memo": "低学年の付き添い確認用。",
-        "pastDutyCount": 3,
-        "children": [
-          {
-            "id": "child-14",
-            "name": "小林 けんた",
-            "grade": 4
-          },
-          {
-            "id": "child-15",
-            "name": "小林 ひかり",
-            "grade": 1
-          }
-        ]
-      },
-      {
         "id": "household-8",
         "addressOrRoom": "201号室",
         "householdName": "加藤",
@@ -189,20 +170,6 @@
         ]
       },
       {
-        "id": "household-11",
-        "addressOrRoom": "22番地",
-        "householdName": "井上",
-        "memo": "",
-        "pastDutyCount": 1,
-        "children": [
-          {
-            "id": "child-20",
-            "name": "井上 みく",
-            "grade": 5
-          }
-        ]
-      },
-      {
         "id": "household-12",
         "addressOrRoom": "101号室",
         "householdName": "木村",
@@ -228,13 +195,6 @@
       }
     ],
     "pairRules": [
-      {
-        "id": "pair-rule-1",
-        "type": "together",
-        "childAId": "child-3",
-        "childBId": "child-15",
-        "note": "新1年生同士なので同じ班にしたい"
-      },
       {
         "id": "pair-rule-2",
         "type": "separate",
@@ -280,7 +240,6 @@
       "group:group-rule-1",
       "group:group-rule-2",
       "group:group-rule-3",
-      "pair:pair-rule-1",
       "pair:pair-rule-2",
       "pair:pair-rule-3"
     ],
